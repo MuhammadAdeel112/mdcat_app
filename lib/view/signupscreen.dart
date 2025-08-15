@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/constants/constants.dart';
-import 'package:mdcat/view/Forget_passwordscreen.dart';
-import 'package:mdcat/view/signupscreen.dart';
+import 'package:mdcat/view/loginscreen.dart';
 import 'package:mdcat/widgets/custom_textfield.dart';
+import 'package:mdcat/widgets/drop_down_textfiled.dart';
 import 'package:mdcat/widgets/gradient_button.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatelessWidget {
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +25,37 @@ class LoginScreen extends StatelessWidget {
                       _topGradientWithBack(context),
 
                       _tabSwitcher(
-                        leftText: "Sign In",
-                        rightText: "Sign Up",
+                        leftText: "Sign Up",
+                        rightText: "Sign In",
                         isLeftActive: true,
                         onRightTap: () {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const SignupScreen(),
+                              builder: (_) => const LoginScreen(),
                             ),
                           );
                         },
                       ),
 
                       _spacer(),
-                      const SizedBox(height: 30),
+
+                      _label("User Name"),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppPadding.horizontal,
+                        ),
+                        child: CustomTextField(
+                          hint: "Enter name",
+                          icon: Icons.person_outline,
+                          iconColor: Colors.black, // icon black
+                          hintColor: Color(
+                            0xCC333333,
+                          ), // #333333CC with 80% opacity
+                        ),
+                      ),
+
+                      _spacer(),
                       _label("Email"),
                       const Padding(
                         padding: EdgeInsets.symmetric(
@@ -56,36 +72,51 @@ class LoginScreen extends StatelessWidget {
 
                       _spacer(),
 
+                      _label("Select Role"),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppPadding.horizontal,
+                        ),
+                        child: CustomDropdown(
+                          hint: "Select Option",
+                          icon: Icons.person_outline, // Can be any icon
+                          items: ["Student", "Teacher", "Admin"],
+                          iconColor: Colors.black, // black icon
+                          hintColor: const Color(0x333333CC), // 80% opacity
+                        ),
+                      ),
+
+                      _spacer(),
                       _label("Password"),
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppPadding.horizontal,
+                        ),
                         child: CustomTextField(
                           hint: "********",
                           icon: Icons.lock_outline,
                           obscure: true,
-                          borderColor: Color(0xFF793FFF), // Purple border
-                          iconColor: Color(0xFF0F1C2C), // Purple icon
-                          hintColor: Color(0xFF0F1C2C), // Dark grey hint
+                          borderColor: Color(0x99793FFF), // purple 60%
+                          iconColor: Color(0xCC0F1C2C), // dark 80%
+                          hintColor: Color(0xCC0F1C2C), // dark 80%
                         ),
                       ),
 
-                      // const   _rememberForgot(),
-                      const RememberForgot(),
-                      const Spacer(),
+                      _spacer(),
 
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppPadding.horizontal,
                         ),
                         child: GradientButton(
-                          text: "Sign In",
+                          text: "Sign Up",
                           onPressed: () {},
                         ),
                       ),
 
                       const SizedBox(height: 25),
                       const Text(
-                        "Or Sign in with",
+                        "Or Sign up with",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 25),
@@ -210,18 +241,13 @@ class LoginScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppPadding.horizontal),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold, // makes it bold
-            fontSize: 16, // optional: makes it look nicer
-          ),
-        ),
+        child: Text(text, style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
 
   Widget _spacer() => const SizedBox(height: AppPadding.fieldSpacing);
+
   Widget _socialRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -247,90 +273,6 @@ class LoginScreen extends StatelessWidget {
         children: [
           Icon(icon, size: 20),
           Text(text, style: TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-}
-
-class RememberForgot extends StatefulWidget {
-  /// Optional: start checked or not, and get a callback when it changes
-  final bool initialValue;
-  final ValueChanged<bool>? onChanged;
-
-  const RememberForgot({super.key, this.initialValue = false, this.onChanged});
-
-  @override
-  State<RememberForgot> createState() => _RememberForgotState();
-}
-
-class _RememberForgotState extends State<RememberForgot> {
-  late bool _rememberMe;
-
-  @override
-  void initState() {
-    super.initState();
-    _rememberMe = widget.initialValue;
-  }
-
-  void _toggle(bool? v) {
-    setState(() => _rememberMe = v ?? !_rememberMe);
-    widget.onChanged?.call(_rememberMe);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    const purple = Color(0xFF793FFF);
-
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: AppPadding.horizontal - 10, // moved slightly left
-        right: AppPadding.horizontal,
-        top: 5,
-        bottom: 5,
-      ),
-
-      child: Row(
-        children: [
-          Checkbox(
-            value: _rememberMe,
-            onChanged: _toggle,
-            checkColor: Colors.white,
-            fillColor: MaterialStateProperty.all(purple),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _toggle(!_rememberMe),
-            child: const Text(
-              "Remember me",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          const Spacer(),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
-              );
-            },
-            child: const Text(
-              "Forgot Password?",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            ),
-          ),
-
-          // GestureDetector(
-          //   onTap: () {
-          //     // TODO: handle forgot password navigation
-          //   },
-          //   child: const Text(
-          //     "Forgot Password?",
-          //     style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-          //   ),
-          // ),
         ],
       ),
     );

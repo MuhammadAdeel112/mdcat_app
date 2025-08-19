@@ -4,6 +4,7 @@ import 'package:mdcat/view/Forget_passwordscreen.dart';
 import 'package:mdcat/view/signupscreen.dart';
 import 'package:mdcat/widgets/custom_textfield.dart';
 import 'package:mdcat/widgets/gradient_button.dart';
+import 'package:mdcat/widgets/topgardientwithback.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -11,7 +12,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: SafeArea(
         child: LayoutBuilder(
@@ -22,7 +23,12 @@ class LoginScreen extends StatelessWidget {
                 child: IntrinsicHeight(
                   child: Column(
                     children: [
-                      _topGradientWithBack(context),
+                      TopGradientWithBack(
+                        onBack: () {
+                          // optional: custom back action
+                          Navigator.pop(context);
+                        },
+                      ),
 
                       _tabSwitcher(
                         leftText: "Sign In",
@@ -70,7 +76,7 @@ class LoginScreen extends StatelessWidget {
                       ),
 
                       // const   _rememberForgot(),
-                      const RememberForgot(),
+                      RememberForgot(),
                       const Spacer(),
 
                       Padding(
@@ -98,43 +104,6 @@ class LoginScreen extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _topGradientWithBack(BuildContext context) {
-    return Container(
-      height: 100,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFEDE2FF), Colors.white],
-        ),
-      ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16), // move circle to right
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE7DBFA),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Transform.translate(
-                offset: const Offset(2, 0), // nudges arrow right
-                child: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 18,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -226,14 +195,14 @@ class LoginScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _socialButton("Apple", Icons.apple, width: 158),
+        _socialButton("Facebook", "assets/images/facebook.jpg", width: 167),
         const SizedBox(width: 15),
-        _socialButton("Google", Icons.g_mobiledata, width: 167),
+        _socialButton("Google", "assets/images/google.png", width: 167),
       ],
     );
   }
 
-  Widget _socialButton(String text, IconData icon, {required double width}) {
+  Widget _socialButton(String text, String assetPath, {required double width}) {
     return Container(
       width: width,
       height: 48,
@@ -245,37 +214,51 @@ class LoginScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, size: 20),
-          Text(text, style: TextStyle(fontWeight: FontWeight.bold)),
+          Image.asset(assetPath, width: 20, height: 20, fit: BoxFit.contain),
+          Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
+
+  // Widget _socialRow() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       _socialButton("Apple", Icons.apple, width: 158),
+  //       const SizedBox(width: 15),
+  //       _socialButton("Google", Icons.g_mobiledata, width: 167),
+  //     ],
+  //   );
+  // }
+
+  // Widget _socialButton(String text, IconData icon, {required double width}) {
+  //   return Container(
+  //     width: width,
+  //     height: 48,
+  //     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 41),
+  //     decoration: BoxDecoration(
+  //       color: const Color(0x1A793FFF), // #793FFF with 10% opacity
+  //       borderRadius: BorderRadius.circular(40),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Icon(icon, size: 20),
+  //         Text(text, style: TextStyle(fontWeight: FontWeight.bold)),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
-class RememberForgot extends StatefulWidget {
-  /// Optional: start checked or not, and get a callback when it changes
-  final bool initialValue;
-  final ValueChanged<bool>? onChanged;
+class RememberForgot extends StatelessWidget {
+  final ValueNotifier<bool> rememberMe = ValueNotifier<bool>(false);
 
-  const RememberForgot({super.key, this.initialValue = false, this.onChanged});
-
-  @override
-  State<RememberForgot> createState() => _RememberForgotState();
-}
-
-class _RememberForgotState extends State<RememberForgot> {
-  late bool _rememberMe;
-
-  @override
-  void initState() {
-    super.initState();
-    _rememberMe = widget.initialValue;
-  }
+  RememberForgot({super.key});
 
   void _toggle(bool? v) {
-    setState(() => _rememberMe = v ?? !_rememberMe);
-    widget.onChanged?.call(_rememberMe);
+    rememberMe.value = v ?? !rememberMe.value;
   }
 
   @override
@@ -284,25 +267,29 @@ class _RememberForgotState extends State<RememberForgot> {
 
     return Padding(
       padding: const EdgeInsets.only(
-        left: AppPadding.horizontal - 10, // moved slightly left
+        left: AppPadding.horizontal - 10,
         right: AppPadding.horizontal,
         top: 5,
         bottom: 5,
       ),
-
       child: Row(
         children: [
-          Checkbox(
-            value: _rememberMe,
-            onChanged: _toggle,
-            checkColor: Colors.white,
-            fillColor: MaterialStateProperty.all(purple),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
+          ValueListenableBuilder<bool>(
+            valueListenable: rememberMe,
+            builder: (context, value, _) {
+              return Checkbox(
+                value: value,
+                onChanged: _toggle,
+                checkColor: Colors.white,
+                fillColor: MaterialStateProperty.all(purple),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            },
           ),
           GestureDetector(
-            onTap: () => _toggle(!_rememberMe),
+            onTap: () => _toggle(!rememberMe.value),
             child: const Text(
               "Remember me",
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -321,16 +308,6 @@ class _RememberForgotState extends State<RememberForgot> {
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
           ),
-
-          // GestureDetector(
-          //   onTap: () {
-          //     // TODO: handle forgot password navigation
-          //   },
-          //   child: const Text(
-          //     "Forgot Password?",
-          //     style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-          //   ),
-          // ),
         ],
       ),
     );

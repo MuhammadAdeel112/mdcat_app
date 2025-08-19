@@ -14,12 +14,6 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
-  // For primary buttons
-  // static const LinearGradient buttonGradient = LinearGradient(
-  //   colors: [Color(0xFF8352F1), Color(0xFF6A3BEF)], // Example from image picker
-  //   begin: Alignment.topLeft,
-  //   end: Alignment.bottomRight,
-  // );
 
   static const LinearGradient signInGradient = LinearGradient(
     colors: [

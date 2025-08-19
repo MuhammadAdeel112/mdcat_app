@@ -4,6 +4,7 @@ import 'package:mdcat/view/loginscreen.dart';
 import 'package:mdcat/widgets/custom_textfield.dart';
 import 'package:mdcat/widgets/drop_down_textfiled.dart';
 import 'package:mdcat/widgets/gradient_button.dart';
+import 'package:mdcat/widgets/topgardientwithback.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -22,7 +23,12 @@ class SignupScreen extends StatelessWidget {
                 child: IntrinsicHeight(
                   child: Column(
                     children: [
-                      _topGradientWithBack(context),
+                      TopGradientWithBack(
+                        onBack: () {
+                          // optional: custom back action
+                          Navigator.pop(context);
+                        },
+                      ),
 
                       _tabSwitcher(
                         leftText: "Sign Up",
@@ -129,43 +135,6 @@ class SignupScreen extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _topGradientWithBack(BuildContext context) {
-    return Container(
-      height: 100,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFEDE2FF), Colors.white],
-        ),
-      ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16), // move circle to right
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE7DBFA),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Transform.translate(
-                offset: const Offset(2, 0), // nudges arrow right
-                child: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 18,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );

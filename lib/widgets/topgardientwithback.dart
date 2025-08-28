@@ -8,7 +8,8 @@ class TopGradientWithBack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      // height: 100,
+      height: MediaQuery.of(context).padding.top + 120,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,

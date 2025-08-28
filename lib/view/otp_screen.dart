@@ -63,7 +63,7 @@ class OTPVerificationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      "Please Enter that six (6) digit code to example@gmail.com, and continue that was sent to your email address",
+                      "Please Enter that six (5) digit code to example@gmail.com, and continue that was sent to your email address",
                       style: TextStyle(fontSize: 14, color: Colors.black54),
                     ),
                     const SizedBox(height: 25),

@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final Color borderColor;
   final Color iconColor;
   final Color hintColor;
+  final TextEditingController? textEditingController;
 
   const CustomTextField({
     super.key,
@@ -16,6 +17,7 @@ class CustomTextField extends StatelessWidget {
     this.borderColor = const Color(0xFF793FFF),
     this.iconColor = const Color(0xFF793FFF),
     this.hintColor = const Color(0xFF793FFF),
+    this.textEditingController,
   });
 
   @override
@@ -26,6 +28,7 @@ class CustomTextField extends StatelessWidget {
       valueListenable: isObscured,
       builder: (context, value, _) {
         return TextField(
+          controller: textEditingController,
           obscureText: value,
           style: TextStyle(color: iconColor),
           decoration: InputDecoration(

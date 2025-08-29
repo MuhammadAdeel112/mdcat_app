@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mdcat/view/demo_quizscreen.dart';
+// import 'package:mdcat/view/demo_quizscreen.dart';
+import 'package:mdcat/view/quiz_screen.dart';
 
 class DemoTestDialog extends StatelessWidget {
   const DemoTestDialog({super.key});
@@ -78,7 +79,7 @@ class DemoTestDialog extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DemoQuizscreen()),
+                      MaterialPageRoute(builder: (context) => QuizScreen()),
                     );
                     //   Navigator.of(context).pop("continue"); // return to parent
                   },

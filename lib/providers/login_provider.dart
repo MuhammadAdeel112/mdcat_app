@@ -146,6 +146,7 @@
 import 'package:flutter/material.dart';
 // import 'package:mdcat/services/auth_service.dart';
 import 'package:mdcat/services/auth_services.dart';
+import 'package:mdcat/services/token_storage.dart';
 import 'package:mdcat/view/homescreen.dart';
 
 class LoginProvider extends ChangeNotifier {
@@ -184,6 +185,10 @@ class LoginProvider extends ChangeNotifier {
       ).showSnackBar(SnackBar(content: Text(data['message'])));
 
       // TODO: Save token if needed (SharedPreferences)
+      final token = data['token'] as String?;
+      if (token != null && token.isNotEmpty) {
+        await TokenStorage.saveToken(token); // save token here
+      }
 
       Navigator.pushReplacement(
         context,

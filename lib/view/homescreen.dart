@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// import 'package:mdcat/view/quiz_screen.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
 import 'package:mdcat/widgets/category_card.dart';
 import 'package:mdcat/widgets/class_selection_dialogue.dart';
 import 'package:mdcat/widgets/demo-test_dialogue.dart';
+// import 'package:mdcat/widgets/demo-test_dialogue.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final ValueNotifier<int> _bottomIndex = ValueNotifier<int>(0);

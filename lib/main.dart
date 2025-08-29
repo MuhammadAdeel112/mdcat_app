@@ -3,6 +3,7 @@ import 'package:mdcat/providers/class_selection_provider.dart';
 import 'package:mdcat/providers/forget_password_provider.dart';
 import 'package:mdcat/providers/gender_provider.dart';
 import 'package:mdcat/providers/new_password_provider.dart';
+import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/signup_provider.dart';
 import 'package:mdcat/view/on_boardingwrapper.dart';
 // import 'package:mdcat/widgets/on_boardingwrapper.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NewPasswordProvider()),
         ChangeNotifierProvider(create: (_) => GenderProvider()),
         ChangeNotifierProvider(create: (context) => ClassSelectionProvider()),
+        ChangeNotifierProvider(create: (_) => QuizProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

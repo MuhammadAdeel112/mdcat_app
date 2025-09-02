@@ -5,7 +5,8 @@ import 'package:mdcat/providers/gender_provider.dart';
 import 'package:mdcat/providers/new_password_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/signup_provider.dart';
-import 'package:mdcat/view/on_boardingwrapper.dart';
+// import 'package:mdcat/view/on_boardingwrapper.dart';
+import 'package:mdcat/view/payment_screen.dart';
 // import 'package:mdcat/widgets/on_boardingwrapper.dart';
 // import 'package:mdcat/view/2on_boarding_screen.dart';
 // import 'package:mdcat/view/3on_boardingscreen.dart';
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         // Start with LoginScreen instead of HomeScreen if you want login first
-        home: OnboardingWrapper(),
+        // home: OnboardingWrapper(),
+        home: PaymentUploadScreen(),
       ),
     );
   }

@@ -1,15 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// import 'package:mdcat/view/profile_screen.dart';
 // import 'package:mdcat/view/quiz_screen.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
 import 'package:mdcat/widgets/category_card.dart';
 import 'package:mdcat/widgets/class_selection_dialogue.dart';
 import 'package:mdcat/widgets/demo-test_dialogue.dart';
+import 'package:mdcat/widgets/shared_bottom_nav_sheet.dart';
 // import 'package:mdcat/widgets/demo-test_dialogue.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-final ValueNotifier<int> _bottomIndex = ValueNotifier<int>(0);
+// final ValueNotifier<int> _bottomIndex = ValueNotifier<int>(0);
 final ValueNotifier<String> _searchFilter = ValueNotifier<String>("All");
 final ValueNotifier<int> _notifCount = ValueNotifier<int>(3);
 
@@ -246,44 +248,92 @@ class HomeScreen extends StatelessWidget {
       ),
 
       // ======= Bottom Navigation (ValueNotifier) =======
-      bottomNavigationBar: ValueListenableBuilder<int>(
-        valueListenable: _bottomIndex,
-        builder: (context, index, _) {
-          return ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-            child: BottomNavigationBar(
-              backgroundColor: Colors.white,
-              currentIndex: index,
-              onTap: (i) => _bottomIndex.value = i,
-              selectedItemColor: const Color(0xFF6F46F0),
-              unselectedItemColor: const Color(0xFF9DA3AE),
-              type: BottomNavigationBarType.fixed,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_rounded),
-                  label: "Home",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.account_balance_wallet_rounded),
-                  label: "Wallet",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.bar_chart_rounded),
+      bottomNavigationBar: const AppBottomNav(currentIndex: 0),
+      // bottomNavigationBar: ValueListenableBuilder<int>(
+      //   valueListenable: _bottomIndex,
+      //   builder: (context, index, _) {
+      //     return ClipRRect(
+      //       borderRadius: const BorderRadius.only(
+      //         topLeft: Radius.circular(24),
+      //         topRight: Radius.circular(24),
+      //       ),
+      //       child: BottomNavigationBar(
+      //         backgroundColor: Colors.white,
+      //         currentIndex: index,
+      //         onTap: (i) {
+      //           if (i == 3) {
+      //             Navigator.push(
+      //               context,
+      //               MaterialPageRoute(builder: (_) => const ProfilePage()),
+      //             );
+      //           } else {
+      //             _bottomIndex.value = i;
+      //           }
+      //         },
+      //         selectedItemColor: const Color(0xFF6F46F0),
+      //         unselectedItemColor: const Color(0xFF9DA3AE),
+      //         type: BottomNavigationBarType.fixed,
+      //         items: const [
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.home_rounded),
+      //             label: "Home",
+      //           ),
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.account_balance_wallet_rounded),
+      //             label: "Wallet",
+      //           ),
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.bar_chart_rounded),
+      //             label: "Score",
+      //           ),
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.person_rounded),
+      //             label: "Profile",
+      //           ),
+      //         ],
+      //       ),
+      //     );
+      //   },
+      // ),
 
-                  label: "Score",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person_rounded),
-                  label: "Profile",
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+      // bottomNavigationBar: ValueListenableBuilder<int>(
+      //   valueListenable: _bottomIndex,
+      //   builder: (context, index, _) {
+      //     return ClipRRect(
+      //       borderRadius: const BorderRadius.only(
+      //         topLeft: Radius.circular(24),
+      //         topRight: Radius.circular(24),
+      //       ),
+      //       child: BottomNavigationBar(
+      //         backgroundColor: Colors.white,
+      //         currentIndex: index,
+      //         onTap: (i) => _bottomIndex.value = i,
+      //         selectedItemColor: const Color(0xFF6F46F0),
+      //         unselectedItemColor: const Color(0xFF9DA3AE),
+      //         type: BottomNavigationBarType.fixed,
+      //         items: const [
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.home_rounded),
+      //             label: "Home",
+      //           ),
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.account_balance_wallet_rounded),
+      //             label: "Wallet",
+      //           ),
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.bar_chart_rounded),
+
+      //             label: "Score",
+      //           ),
+      //           BottomNavigationBarItem(
+      //             icon: Icon(Icons.person_rounded),
+      //             label: "Profile",
+      //           ),
+      //         ],
+      //       ),
+      //     );
+      //   },
+      // ),
     );
   }
 }

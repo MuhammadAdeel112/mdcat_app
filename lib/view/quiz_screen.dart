@@ -26,103 +26,6 @@ class QuizScreen extends StatelessWidget {
                   timerText: "1 hour 15 min",
                 ),
 
-                // Container(
-                //   width: double.infinity,
-                //   padding: const EdgeInsets.symmetric(
-                //     horizontal: 30,
-                //     vertical: 30,
-                //   ),
-                //   decoration: BoxDecoration(
-                //     image: const DecorationImage(
-                //       image: AssetImage(
-                //         "assets/images/demo background.png",
-                //       ), // 👈 your gradient image
-                //       fit: BoxFit.cover,
-                //     ),
-                //     borderRadius: const BorderRadius.only(
-                //       bottomLeft: Radius.circular(16),
-                //       bottomRight: Radius.circular(16),
-                //     ),
-                //   ),
-                //   child: Column(
-                //     children: [
-                //       Row(
-                //         children: [
-                //           InkWell(
-                //             onTap: () => Navigator.of(context).pop(),
-                //             child: const Icon(
-                //               Icons.arrow_back,
-                //               size: 20,
-                //               color: Colors.white,
-                //             ),
-                //           ),
-
-                //           const Spacer(),
-                //           const Text(
-                //             "Demo Test",
-                //             style: TextStyle(
-                //               fontSize: 16,
-                //               fontWeight: FontWeight.w600,
-                //               color: Colors.black,
-                //             ),
-                //           ),
-                //           const Spacer(),
-                //           const Icon(
-                //             Icons.more_vert,
-                //             color: Colors.transparent,
-                //           ),
-                //         ],
-                //       ),
-                //       const SizedBox(height: 12),
-                //       Container(
-                //         height: 40, // adjust depending on your header height
-                //         width: double.infinity,
-                //         child: Stack(
-                //           children: [
-                //             /// Question Progress (#1/70) - bottom center
-                //             ///
-                //             Align(
-                //               alignment: Alignment.bottomCenter,
-                //               child: Text(
-                //                 qp.counterText, // 👈 dynamic counter
-                //                 style: const TextStyle(
-                //                   fontSize: 15,
-                //                   fontWeight: FontWeight.w600,
-                //                   color: Colors.black,
-                //                 ),
-                //               ),
-                //             ),
-
-                //             /// Timer - bottom right
-                //             Align(
-                //               alignment: Alignment.bottomRight,
-                //               child: Row(
-                //                 mainAxisSize: MainAxisSize.min,
-                //                 children: const [
-                //                   Icon(
-                //                     Icons.access_time,
-                //                     size: 16,
-                //                     color: Colors.black,
-                //                   ),
-                //                   SizedBox(width: 4),
-                //                   Text(
-                //                     "1 hour 15 min",
-                //                     style: TextStyle(
-                //                       color: Colors.black,
-                //                       fontSize: 13,
-                //                     ),
-                //                   ),
-                //                 ],
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-
-                //     ],
-                //   ),
-                // ),
-
                 // const SizedBox(height: 16),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -197,7 +100,8 @@ class QuizScreen extends StatelessWidget {
                       return OptionTile(
                         qIndex: qp.currentIndex,
                         index: i,
-                        label: "${String.fromCharCode(65 + i)}.",
+                        label:
+                            "${String.fromCharCode(65 + i)}.", // 👈 Adds A., B., C., D.
                         text: question.options[i],
                       );
                     },
@@ -266,6 +170,30 @@ class QuizScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                /// Show Skipped Questions Indexes
+                if (qp.skippedIndexes.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      children: qp.skippedIndexes.map((index) {
+                        return CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Color(0xFF8C59FF),
+                          child: Text(
+                            "${index + 1}", // 👈 show MCQ number (1-based)
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
               ],
             ),
           ),

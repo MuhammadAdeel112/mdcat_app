@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/view/Score_screen.dart';
 import 'package:mdcat/view/homescreen.dart';
+import 'package:mdcat/view/payment_screen.dart';
 import 'package:mdcat/view/profile_screen.dart';
-import 'package:mdcat/view/wallet_screen.dart';
+// import 'package:mdcat/view/wallet_screen.dart';
 // import 'home_screen.dart';
 // import 'profile_page.dart';
 
@@ -19,7 +20,7 @@ class AppBottomNav extends StatelessWidget {
         target = const HomeScreen();
         break;
       case 1:
-        target = WalletScreen();
+        target = PaymentUploadScreen();
         break;
       case 2:
         target = ScoreHistoryScreen();
@@ -39,13 +40,24 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(24),
-        topRight: Radius.circular(24),
+    return Container(
+      decoration: ShapeDecoration(
+        color: Colors.white, // background goes here
+        shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          side: const BorderSide(
+            color: Color(0xFFCCCCCC), // border color
+            width: 1,
+          ),
+        ),
       ),
       child: BottomNavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors
+            .transparent, // 🔑 makes sure the white bg doesn't override your border
+        elevation: 0, // remove default shadow
         currentIndex: currentIndex,
         onTap: (i) => _onItemTapped(context, i),
         selectedItemColor: const Color(0xFF6F46F0),

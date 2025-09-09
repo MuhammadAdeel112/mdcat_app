@@ -1,70 +1,8 @@
-// import 'package:flutter/material.dart';
-
-// class SignupProvider extends ChangeNotifier {
-//   // Controllers
-//   final TextEditingController nameController = TextEditingController();
-//   final TextEditingController emailController = TextEditingController();
-//   final TextEditingController passwordController = TextEditingController();
-
-//   // Role from dropdown
-//   String? selectedRole;
-//   void setRole(String? value) {
-//     selectedRole = value;
-//     notifyListeners();
-//   }
-
-//   bool _isLoading = false;
-//   bool get isLoading => _isLoading;
-
-//   String? _validate() {
-//     final name = nameController.text.trim();
-//     final email = emailController.text.trim();
-//     final pass = passwordController.text.trim();
-
-//     if (name.isEmpty) return "Please enter name";
-//     if (email.isEmpty) return "Please enter email";
-//     if (!email.contains("@") || !email.contains(".")) return "Invalid email";
-//     if (selectedRole == null) return "Please select a role";
-//     if (pass.length < 6) return "Password must be at least 6 characters";
-//     return null;
-//   }
-
-//   Future<void> register(BuildContext context) async {
-//     final error = _validate();
-//     if (error != null) {
-//       ScaffoldMessenger.of(
-//         context,
-//       ).showSnackBar(SnackBar(content: Text(error)));
-//       return;
-//     }
-
-//     _isLoading = true;
-//     notifyListeners();
-
-//     // Simulate API delay — replace with real API tomorrow
-//     await Future.delayed(const Duration(seconds: 2));
-
-//     _isLoading = false;
-//     notifyListeners();
-
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text("Signed up: ${emailController.text.trim()}")),
-//     );
-
-//     // TODO: Navigate as per your flow (e.g., to OTP or Home)
-//     // Navigator.pop(context);
-//   }
-
-//   @override
-//   void dispose() {
-//     nameController.dispose();
-//     emailController.dispose();
-//     passwordController.dispose();
-//     super.dispose();
-//   }
-// }
-
 import 'package:flutter/material.dart';
+// import 'package:mdcat/models/student_model.dart';
+import 'package:mdcat/providers/gender_provider.dart';
+import 'package:mdcat/repo/signup_repo.dart';
+import 'package:provider/provider.dart';
 
 class SignupProvider extends ChangeNotifier {
   // Controllers
@@ -78,9 +16,17 @@ class SignupProvider extends ChangeNotifier {
   String? selectedTestType;
   String? selectedProvince;
 
-  // Profile Pic (we'll store just path/url for now)
+  // Profile Pic
   String? profilePicPath;
 
+  // Loading state
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  // Repo instance
+  final SignupRepo _repo = SignupRepo();
+
+  // Setters
   void setTestType(String? value) {
     selectedTestType = value;
     notifyListeners();
@@ -96,30 +42,32 @@ class SignupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  String? _validate() {
-    final name = nameController.text.trim();
-    final fatherName = fatherNameController.text.trim();
-    final phone = phoneNoController.text.trim();
-    final email = emailController.text.trim();
-    final pass = passwordController.text.trim();
-
-    if (name.isEmpty) return "Please enter name";
-    if (fatherName.isEmpty) return "Please enter father name";
-    if (phone.isEmpty) return "Please enter phone number";
-    if (email.isEmpty) return "Please enter email";
-    if (!email.contains("@") || !email.contains(".")) return "Invalid email";
-    if (pass.length < 6) return "Password must be at least 6 characters";
+  // Validation
+  String? _validate(String gender) {
+    if (nameController.text.trim().isEmpty) return "Please enter name";
+    if (fatherNameController.text.trim().isEmpty)
+      return "Please enter father name";
+    if (phoneNoController.text.trim().isEmpty)
+      return "Please enter phone number";
+    if (emailController.text.trim().isEmpty) return "Please enter email";
+    if (!emailController.text.contains("@") ||
+        !emailController.text.contains("."))
+      return "Invalid email";
+    if (passwordController.text.trim().length < 6)
+      return "Password must be at least 6 characters";
+    if (gender.isEmpty) return "Please select gender";
     if (selectedTestType == null) return "Please select test type";
     if (selectedProvince == null) return "Please select province";
     if (profilePicPath == null) return "Please upload profile picture";
     return null;
   }
 
+  // Register API Call
   Future<void> register(BuildContext context) async {
-    final error = _validate();
+    final genderProvider = Provider.of<GenderProvider>(context, listen: false);
+    final gender = genderProvider.selectedGender;
+
+    final error = _validate(gender);
     if (error != null) {
       ScaffoldMessenger.of(
         context,
@@ -130,18 +78,38 @@ class SignupProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Simulate API delay — replace with real API
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final student = await _repo.signup(
+        name: nameController.text.trim(),
+        fatherName: fatherNameController.text.trim(),
+        phoneNo: phoneNoController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        testType: selectedTestType!,
+        province: selectedProvince!,
+        gender: gender,
+        profilePicPath: profilePicPath,
+      );
 
-    _isLoading = false;
-    notifyListeners();
+      _isLoading = false;
+      notifyListeners();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Signed up: ${emailController.text.trim()}")),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("🎉 Welcome ${student.name}, signup successful!"),
+        ),
+      );
 
-    // TODO: Navigate as per your flow (e.g., to OTP or Home)
-    // Navigator.pop(context);
+      // ✅ Navigate after success
+      Navigator.pushReplacementNamed(context, "/home");
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   @override

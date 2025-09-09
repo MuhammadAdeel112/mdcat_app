@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/gender_provider.dart';
 import 'package:mdcat/view/loginscreen.dart';
 import 'package:provider/provider.dart';
-// import 'gender_provider.dart';
-// import 'next_screen.dart';
 
 class GenderSelectionScreen extends StatelessWidget {
   const GenderSelectionScreen({super.key});
@@ -64,19 +62,6 @@ class GenderSelectionScreen extends StatelessWidget {
               ),
             ),
 
-            // CircleAvatar(
-            //   radius: 80,
-            //   child: ClipOval(
-            //     child: Image.asset(
-            //       genderProvider.selectedGender == "Male"
-            //           ? "assets/images/genderboy.png"
-            //           : "assets/images/gendergirl.png",
-            //       fit: BoxFit.cover,
-            //       width: 250,
-            //       height: 250,
-            //     ),
-            //   ),
-            // ),
             const SizedBox(height: 16),
 
             // Gender Text
@@ -154,34 +139,9 @@ class GenderSelectionScreen extends StatelessWidget {
                       color: Colors.white, // Set text color to white
                     ),
                   ),
-
-                  // child: const Text(
-                  //   "Done",
-                  //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,)),
                 ),
               ),
             ),
-
-            //
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (_) => const LoginScreen()),
-            //     );
-            //   },
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.deepPurple,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(30),
-            //     ),
-            //     minimumSize: const Size(double.infinity, 55),
-            //   ),
-            //   child: const Text(
-            //     "Done",
-            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            //   ),
-            // ),
           ],
         ),
       ),

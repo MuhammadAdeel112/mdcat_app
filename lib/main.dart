@@ -2,11 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/class_selection_provider.dart';
 import 'package:mdcat/providers/forget_password_provider.dart';
 import 'package:mdcat/providers/gender_provider.dart';
+import 'package:mdcat/providers/levels_provider.dart';
 import 'package:mdcat/providers/new_password_provider.dart';
+import 'package:mdcat/providers/passing_result_provider.dart';
+import 'package:mdcat/providers/payment_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/signup_provider.dart';
+import 'package:mdcat/providers/test_result_provider.dart';
+// import 'package:mdcat/view/demo_quizscreen.dart';
+import 'package:mdcat/view/quiz_screen.dart';
 // import 'package:mdcat/view/on_boardingwrapper.dart';
-import 'package:mdcat/view/payment_screen.dart';
+// import 'package:mdcat/view/quiz_screen.dart';
+// import 'package:mdcat/view/payment_screen.dart';
+// import 'package:mdcat/view/level_screen.dart';
+// import 'package:mdcat/view/quiz_screen.dart';
+// import 'package:mdcat/view/on_boardingwrapper.dart';
+// import 'package:mdcat/view/payment_screen.dart';
+// import 'package:mdcat/view/test_result_screen.dart';
+// import 'package:mdcat/view/quiz_screen.dart';
+// import 'package:mdcat/view/test_result_screen.dart';
+// import 'package:mdcat/view/level_screen.dart';
+// import 'package:mdcat/view/passing_result_screen.dart';
+// import 'package:mdcat/view/test_result_screen.dart';
+// import 'package:mdcat/view/on_boardingwrapper.dart';
+// import 'package:mdcat/view/payment_screen.dart';
 // import 'package:mdcat/widgets/on_boardingwrapper.dart';
 // import 'package:mdcat/view/2on_boarding_screen.dart';
 // import 'package:mdcat/view/3on_boardingscreen.dart';
@@ -47,6 +66,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GenderProvider()),
         ChangeNotifierProvider(create: (context) => ClassSelectionProvider()),
         ChangeNotifierProvider(create: (_) => QuizProvider()),
+        ChangeNotifierProvider(create: (_) => LevelsViewModel()),
+        ChangeNotifierProvider(create: (_) => TestResultViewModel()),
+        ChangeNotifierProvider(create: (_) => PaymentProvider()),
+        ChangeNotifierProvider(
+          create: (_) => ResultProvider()..setResult(70, 39),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -55,8 +80,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         // Start with LoginScreen instead of HomeScreen if you want login first
-        // home: OnboardingWrapper(),
-        home: PaymentUploadScreen(),
+        home: QuizScreen(),
+        // home: PaymentUploadScreen(),
       ),
     );
   }

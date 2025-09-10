@@ -53,35 +53,6 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      // Positioned(
-                      //   bottom: 0,
-                      //   right: 0,
-                      //   child: CircleAvatar(
-                      //     radius: 14,
-                      //     backgroundColor: Colors.white,
-                      //     child: Image.asset(
-                      //       'assets/images/camera.png', // Replace with your asset path
-                      //       width: 20,
-                      //       height: 20,
-                      //       fit: BoxFit.contain,
-                      //     ),
-                      //   ),
-                      // ),
-
-                      // Positioned(
-                      //   bottom: 0,
-                      //   right: 0,
-                      //   child: CircleAvatar(
-                      //     radius: 14,
-                      //     backgroundColor: Colors.white,
-                      //     child: const Icon(
-                      //       Icons.camera_alt,
-                      //       size: 16,
-                      //       color: Color(0xFF242760),
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -199,13 +170,6 @@ class ProfilePage extends StatelessWidget {
                   },
                 ),
 
-                // buildMenuItem("Log out", Icons.logout),
-                // buildMenuItem(
-                //   "Log out",
-                //   Icons.logout,
-                //   textColor: Color(0xFF333333), // black text
-                //   iconColor: Colors.red, // red icon
-                // ),
                 MenuItem(
                   text: "Log out",
                   icon: Icons.logout,
@@ -229,31 +193,3 @@ class ProfilePage extends StatelessWidget {
     );
   }
 }
-
-//   Widget buildMenuItem(
-//     String text,
-//     IconData icon, {
-//     Color textColor = const Color(0xFF333333), // default: #333333 for text
-//     Color iconColor = const Color(0xFF333333), // default: purple for icon
-//   }) {
-//     return ListTile(
-//       leading: Icon(
-//         icon,
-//         color: iconColor, // 👈 separate icon color
-//       ),
-//       title: Text(
-//         text,
-//         style: TextStyle(
-//           color: textColor, // 👈 separate text color
-//           fontSize: 16,
-//         ),
-//       ),
-//       trailing: const Icon(
-//         Icons.chevron_right, // bold style
-//         size: 24,
-//         color: Color(0xFF8C59FF),
-//       ),
-//       onTap: () {},
-//     );
-//   }
-// }

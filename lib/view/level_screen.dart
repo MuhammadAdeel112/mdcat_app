@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/models/level_model.dart';
 import 'package:mdcat/providers/levels_provider.dart';
+import 'package:mdcat/view/physics_screen.dart';
 import 'package:mdcat/widgets/custom_background.dart';
 import 'package:mdcat/widgets/shared_bottom_nav_sheet.dart';
 import 'package:provider/provider.dart';
@@ -71,10 +72,20 @@ class LevelsScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (level.isUnlocked) {
-          // ✅ Navigate to MCQ screen
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Opening ${level.title}...")));
+          if (position == 1) {
+            // Check if it's Level 1
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const PhysicsScreen(), // Replace with your new screen
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Opening ${level.title}...")),
+            );
+          }
         } else {
           final success = provider.unlockLevel(level.id);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -88,6 +99,26 @@ class LevelsScreen extends StatelessWidget {
           );
         }
       },
+
+      // onTap: () {
+      //   if (level.isUnlocked) {
+      //     // ✅ Navigate to MCQ screen
+      //     ScaffoldMessenger.of(
+      //       context,
+      //     ).showSnackBar(SnackBar(content: Text("Opening ${level.title}...")));
+      //   } else {
+      //     final success = provider.unlockLevel(level.id);
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(
+      //           success
+      //               ? "${level.title} unlocked!"
+      //               : "Not enough credits to unlock ${level.title}.",
+      //         ),
+      //       ),
+      //     );
+      //   }
+      // },
       child: Stack(
         children: [
           // Main card
@@ -187,203 +218,4 @@ class LevelsScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildLevelCard(
-  //   LevelModel level,
-  //   int position,
-  //   LevelsViewModel provider,
-  //   BuildContext context,
-  // ) {
-  //   String getOrdinal(int number) {
-  //     if (number >= 11 && number <= 13) return "${number}th";
-  //     switch (number % 10) {
-  //       case 1:
-  //         return "${number}st";
-  //       case 2:
-  //         return "${number}nd";
-  //       case 3:
-  //         return "${number}rd";
-  //       default:
-  //         return "${number}th";
-  //     }
-  //   }
-
-  //   return GestureDetector(
-  //     onTap: () {
-  //       if (level.isUnlocked) {
-  //         // ✅ Navigate to MCQ screen here
-  //         ScaffoldMessenger.of(
-  //           context,
-  //         ).showSnackBar(SnackBar(content: Text("Opening ${level.title}...")));
-  //       } else {
-  //         // Try unlocking
-  //         final success = provider.unlockLevel(level.id);
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //             content: Text(
-  //               success
-  //                   ? "${level.title} unlocked!"
-  //                   : "Not enough credits to unlock ${level.title}.",
-  //             ),
-  //           ),
-  //         );
-  //       }
-  //     },
-  //     child: Container(
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(12),
-  //         color: Colors.white,
-  //         border: Border.all(
-  //           color: level.isUnlocked ? Colors.green : Colors.red,
-  //           width: 1.0,
-  //         ),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.black.withOpacity(0.05),
-  //             blurRadius: 6,
-  //             offset: const Offset(2, 2),
-  //           ),
-  //         ],
-  //       ),
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(12.0),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Stack(
-  //               alignment: Alignment.center,
-  //               children: [
-  //                 Image.asset(
-  //                   "assets/images/ribbon.png",
-  //                   height: 55,
-  //                   fit: BoxFit.cover,
-  //                 ),
-  //                 Align(
-  //                   child: Transform.translate(
-  //                     offset: const Offset(0, -13),
-  //                     child: Text(
-  //                       getOrdinal(position),
-  //                       style: const TextStyle(
-  //                         fontSize: 10,
-  //                         fontWeight: FontWeight.w600,
-  //                         color: Colors.black,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             const SizedBox(height: 12),
-  //             Text(
-  //               level.title,
-  //               style: const TextStyle(
-  //                 fontSize: 18,
-  //                 fontWeight: FontWeight.w600,
-  //                 color: Colors.black,
-  //               ),
-  //             ),
-  //             const SizedBox(height: 4),
-  //             Text(
-  //               "${level.mcqs} MCQs",
-  //               style: const TextStyle(fontSize: 12, color: Color(0xFF727272)),
-  //             ),
-  //             const Spacer(),
-  //             Text(
-  //               level.isUnlocked
-  //                   ? "Unlocked"
-  //                   : "Unlock: ${level.price} credits",
-  //               style: TextStyle(
-  //                 fontSize: 12,
-  //                 color: level.isUnlocked ? Colors.green : Colors.red,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildLevelCard(LevelModel level, int position) {
-  //   String getOrdinal(int number) {
-  //     if (number >= 11 && number <= 13) return "${number}th"; // special case
-  //     switch (number % 10) {
-  //       case 1:
-  //         return "${number}st";
-  //       case 2:
-  //         return "${number}nd";
-  //       case 3:
-  //         return "${number}rd";
-  //       default:
-  //         return "${number}th";
-  //     }
-  //   }
-
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(12),
-  //       color: Colors.white,
-  //       border: Border.all(
-  //         color: const Color(0xFFCCCCCC), // border color
-  //         width: 1.0, // border thickness
-  //       ),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.05),
-  //           blurRadius: 6,
-  //           offset: const Offset(2, 2),
-  //         ),
-  //       ],
-  //     ),
-
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(12.0), // give inner spacing
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start, // align left
-  //         children: [
-  //           Stack(
-  //             alignment: Alignment.center,
-  //             children: [
-  //               Image.asset(
-  //                 "assets/images/ribbon.png",
-  //                 height: 55,
-
-  //                 fit: BoxFit.cover,
-  //               ),
-  //               Align(
-  //                 child: Transform.translate(
-  //                   offset: const Offset(0, -13),
-  //                   // alignment: const Alignment(0, -5), // move text slightly down
-  //                   child: Text(
-  //                     getOrdinal(position),
-  //                     style: const TextStyle(
-  //                       fontSize: 10,
-  //                       fontWeight: FontWeight.w600,
-  //                       color: Colors.black,
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-
-  //           const SizedBox(height: 12),
-  //           Text(
-  //             level.title,
-  //             style: const TextStyle(
-  //               fontSize: 18,
-  //               fontWeight: FontWeight.w600,
-  //               color: Colors.black,
-  //             ),
-  //           ),
-  //           const SizedBox(height: 4),
-  //           Text(
-  //             "${level.mcqs} Mcqs",
-  //             style: const TextStyle(fontSize: 12, color: Color(0xFF727272)),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

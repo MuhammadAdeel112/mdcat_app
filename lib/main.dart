@@ -9,8 +9,12 @@ import 'package:mdcat/providers/payment_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/signup_provider.dart';
 import 'package:mdcat/providers/test_result_provider.dart';
+import 'package:mdcat/view/homescreen.dart';
+// import 'package:mdcat/view/chat_screen.dart';
+// import 'package:mdcat/view/on_boardingwrapper.dart';
+// import 'package:mdcat/view/on_boardingwrapper.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
-import 'package:mdcat/view/quiz_screen.dart';
+// import 'package:mdcat/view/quiz_screen.dart';
 // import 'package:mdcat/view/on_boardingwrapper.dart';
 // import 'package:mdcat/view/quiz_screen.dart';
 // import 'package:mdcat/view/payment_screen.dart';
@@ -80,7 +84,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         // Start with LoginScreen instead of HomeScreen if you want login first
-        home: QuizScreen(),
+        home: HomeScreen(),
         // home: PaymentUploadScreen(),
       ),
     );

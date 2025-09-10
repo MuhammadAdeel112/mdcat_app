@@ -43,6 +43,7 @@ class LoginProvider extends ChangeNotifier {
       final token = data['token'] as String?;
       if (token != null && token.isNotEmpty) {
         await TokenStorage.saveToken(token); // save token here
+        print("Saved Token: $token");
       }
 
       Navigator.pushReplacement(

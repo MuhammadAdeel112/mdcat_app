@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mdcat/providers/payment_provider.dart';
@@ -158,9 +158,7 @@ class PaymentUploadScreen extends StatelessWidget {
                           const SizedBox(height: 14),
                           ElevatedButton(
                             onPressed: () async {
-                              // Example dummy file selection
-                              File dummyFile = File("path/to/file.png");
-                              await provider.pickFile(dummyFile);
+                              await provider.pickFile();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFEEEAF8),
@@ -176,14 +174,16 @@ class PaymentUploadScreen extends StatelessWidget {
                                 vertical: 10,
                               ),
                             ),
-                            child: const Text(
-                              "Upload file",
-                              style: TextStyle(
+                            child: Text(
+                              provider.selectedFileName ?? "Upload file",
+                              style: const TextStyle(
                                 color: Color(0xFF8C59FF),
                                 fontSize: 14,
                               ),
                             ),
                           ),
+
+                          //
                         ],
                       ),
                     ),

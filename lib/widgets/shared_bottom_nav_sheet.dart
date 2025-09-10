@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/view/Score_screen.dart';
+import 'package:mdcat/view/chat_screen.dart';
+// import 'package:mdcat/view/chat_screen.dart';
 import 'package:mdcat/view/homescreen.dart';
-import 'package:mdcat/view/payment_screen.dart';
+// import 'package:mdcat/view/payment_screen.dart';
+// import 'package:mdcat/view/payment_screen.dart';
 import 'package:mdcat/view/profile_screen.dart';
 // import 'package:mdcat/view/wallet_screen.dart';
 // import 'home_screen.dart';
@@ -20,7 +23,7 @@ class AppBottomNav extends StatelessWidget {
         target = const HomeScreen();
         break;
       case 1:
-        target = PaymentUploadScreen();
+        target = ChatScreen();
         break;
       case 2:
         target = ScoreHistoryScreen();
@@ -69,8 +72,9 @@ class AppBottomNav extends StatelessWidget {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_rounded),
-            label: "Wallet",
+            // icon: Icon(Icons.account_balance_wallet_rounded),
+            icon: Icon(Icons.chat),
+            label: "Chat",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart_rounded),

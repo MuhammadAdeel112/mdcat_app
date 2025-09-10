@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mdcat/view/level_screen.dart';
 // import 'package:mdcat/view/profile_screen.dart';
 // import 'package:mdcat/view/quiz_screen.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/widgets/category_card.dart';
 import 'package:mdcat/widgets/class_selection_dialogue.dart';
 import 'package:mdcat/widgets/demo-test_dialogue.dart';
+// import 'package:mdcat/widgets/demo-test_dialogue.dart';
 import 'package:mdcat/widgets/shared_bottom_nav_sheet.dart';
 // import 'package:mdcat/widgets/demo-test_dialogue.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -192,22 +194,50 @@ class HomeScreen extends StatelessWidget {
                     onTap: () async {
                       final screenContext = context;
 
-                      // First dialog
+                      // Show Class Selection Dialog
                       final result = await showDialog(
                         context: screenContext,
                         builder: (context) => const ClassSelectionDialog(),
                       );
 
-                      // Only proceed if user pressed Continue
+                      // If user pressed Continue -> navigate to LevelsScreen
                       if (result == "continue") {
-                        // Second dialog
-                        await showDialog(
-                          context: screenContext,
-                          builder: (context) => const DemoTestDialog(),
+                        Navigator.push(
+                          screenContext,
+                          MaterialPageRoute(
+                            builder: (_) => LevelsScreen(
+                              // 👈 pass subject name if needed
+                            ),
+                          ),
                         );
                       }
                     },
                   ),
+
+                  // CategoryCard(
+                  //   image: "assets/images/physics.png",
+                  //   title: "Physics",
+                  //   subtitle: "15 Levels",
+                  //   color: const Color(0xFFFAFCFF),
+                  //   onTap: () async {
+                  //     final screenContext = context;
+
+                  //     // First dialog
+                  //     final result = await showDialog(
+                  //       context: screenContext,
+                  //       builder: (context) => const ClassSelectionDialog(),
+                  //     );
+
+                  //     // Only proceed if user pressed Continue
+                  //     if (result == "continue") {
+                  //       // Second dialog
+                  //       await showDialog(
+                  //         context: screenContext,
+                  //         builder: (context) => const DemoTestDialog(),
+                  //       );
+                  //     }
+                  //   },
+                  // ),
 
                   //
                   const CategoryCard(
@@ -234,12 +264,28 @@ class HomeScreen extends StatelessWidget {
                     subtitle: "20 Levels",
                     color: Color(0xFFFAFCFF),
                   ),
-                  const CategoryCard(
+                  CategoryCard(
                     image: "assets/images/mockup.png",
                     title: "Mockup Test",
-                    subtitle: "20 MCQs",
-                    color: Color(0xFFFFFCFA),
+                    subtitle: "Full syllabus",
+                    color: const Color(0xFFFFF8F0),
+                    onTap: () async {
+                      final screenContext = context;
+
+                      // Show only Demo Test Dialog
+                      await showDialog(
+                        context: screenContext,
+                        builder: (context) => const DemoTestDialog(),
+                      );
+                    },
                   ),
+
+                  // const CategoryCard(
+                  //   image: "assets/images/mockup.png",
+                  //   title: "Mockup Test",
+                  //   subtitle: "20 MCQs",
+                  //   color: Color(0xFFFFFCFA),
+                  // ),
                 ],
               ),
             ],
@@ -249,91 +295,6 @@ class HomeScreen extends StatelessWidget {
 
       // ======= Bottom Navigation (ValueNotifier) =======
       bottomNavigationBar: const AppBottomNav(currentIndex: 0),
-      // bottomNavigationBar: ValueListenableBuilder<int>(
-      //   valueListenable: _bottomIndex,
-      //   builder: (context, index, _) {
-      //     return ClipRRect(
-      //       borderRadius: const BorderRadius.only(
-      //         topLeft: Radius.circular(24),
-      //         topRight: Radius.circular(24),
-      //       ),
-      //       child: BottomNavigationBar(
-      //         backgroundColor: Colors.white,
-      //         currentIndex: index,
-      //         onTap: (i) {
-      //           if (i == 3) {
-      //             Navigator.push(
-      //               context,
-      //               MaterialPageRoute(builder: (_) => const ProfilePage()),
-      //             );
-      //           } else {
-      //             _bottomIndex.value = i;
-      //           }
-      //         },
-      //         selectedItemColor: const Color(0xFF6F46F0),
-      //         unselectedItemColor: const Color(0xFF9DA3AE),
-      //         type: BottomNavigationBarType.fixed,
-      //         items: const [
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.home_rounded),
-      //             label: "Home",
-      //           ),
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.account_balance_wallet_rounded),
-      //             label: "Wallet",
-      //           ),
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.bar_chart_rounded),
-      //             label: "Score",
-      //           ),
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.person_rounded),
-      //             label: "Profile",
-      //           ),
-      //         ],
-      //       ),
-      //     );
-      //   },
-      // ),
-
-      // bottomNavigationBar: ValueListenableBuilder<int>(
-      //   valueListenable: _bottomIndex,
-      //   builder: (context, index, _) {
-      //     return ClipRRect(
-      //       borderRadius: const BorderRadius.only(
-      //         topLeft: Radius.circular(24),
-      //         topRight: Radius.circular(24),
-      //       ),
-      //       child: BottomNavigationBar(
-      //         backgroundColor: Colors.white,
-      //         currentIndex: index,
-      //         onTap: (i) => _bottomIndex.value = i,
-      //         selectedItemColor: const Color(0xFF6F46F0),
-      //         unselectedItemColor: const Color(0xFF9DA3AE),
-      //         type: BottomNavigationBarType.fixed,
-      //         items: const [
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.home_rounded),
-      //             label: "Home",
-      //           ),
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.account_balance_wallet_rounded),
-      //             label: "Wallet",
-      //           ),
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.bar_chart_rounded),
-
-      //             label: "Score",
-      //           ),
-      //           BottomNavigationBarItem(
-      //             icon: Icon(Icons.person_rounded),
-      //             label: "Profile",
-      //           ),
-      //         ],
-      //       ),
-      //     );
-      //   },
-      // ),
     );
   }
 }

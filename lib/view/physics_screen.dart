@@ -4,8 +4,8 @@ import 'package:mdcat/widgets/custom_background.dart';
 import 'package:mdcat/widgets/option_tile.dart';
 import 'package:provider/provider.dart';
 
-class QuizScreen extends StatelessWidget {
-  const QuizScreen({super.key});
+class PhysicsScreen extends StatelessWidget {
+  const PhysicsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,153 @@ class QuizScreen extends StatelessWidget {
               children: [
                 /// Purple Gradient Header
                 CustomHeader(
-                  title: "Demo Test",
-                  counterText: "1/70",
-                  timerText: "1 hour 15 min",
+                  title: "Physics",
+                  counterText: "#1/70",
+                  timerText: "Level 1",
                 ),
 
                 // const SizedBox(height: 16),
                 const SizedBox(height: 12),
+                // Add this just above LinearProgressIndicator
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Pause",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      OutlinedButton(
+                        onPressed: () {
+                          final qp = context.read<QuizProvider>();
+                          qp.pauseQuiz();
+
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              title: Row(
+                                children: [
+                                  const Text(
+                                    "Quiz Paused",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(
+                                        context,
+                                      ); // close the dialog
+                                    },
+                                  ),
+                                ],
+                              ),
+                              content: const Text(
+                                "Your quiz is paused. Click Resume to continue.",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    qp.resumeQuiz();
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Resume"),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                            color: Colors.orange,
+                            width: 1,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                        ),
+                        child: const Text(
+                          "Pause",
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+
+                      // OutlinedButton(
+                      //   onPressed: () {
+                      //     final qp = context.read<QuizProvider>();
+                      //     qp.pauseQuiz();
+
+                      //     showDialog(
+                      //       context: context,
+                      //       barrierDismissible: false,
+                      //       builder: (_) => AlertDialog(
+                      //         title: const Text("Quiz Paused"),
+                      //         content: const Text(
+                      //           "Your quiz is paused. Click Resume to continue.",
+                      //         ),
+                      //         actions: [
+                      //           TextButton(
+                      //             onPressed: () {
+                      //               qp.resumeQuiz();
+                      //               Navigator.pop(context);
+                      //             },
+                      //             child: const Text("Resume"),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     );
+                      //   },
+                      //   style: OutlinedButton.styleFrom(
+                      //     side: const BorderSide(
+                      //       color: Colors.orange,
+                      //       width: 1,
+                      //     ),
+                      //     shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(8),
+                      //     ),
+                      //     padding: const EdgeInsets.symmetric(
+                      //       horizontal: 12,
+                      //       vertical: 6,
+                      //     ),
+                      //   ),
+                      //   child: const Text(
+                      //     "Pause",
+                      //     style: TextStyle(
+                      //       color: Colors.orange,
+                      //       fontWeight: FontWeight.w600,
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+
                 SizedBox(
                   width:
                       MediaQuery.of(context).size.width *
@@ -42,7 +182,6 @@ class QuizScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
 
                 /// Question Box

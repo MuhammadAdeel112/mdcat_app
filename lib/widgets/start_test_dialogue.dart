@@ -911,6 +911,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+// import 'package:mdcat/view/physics_screen.dart';
 import 'package:mdcat/view/quiz_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/providers/attempt_provider.dart';
@@ -986,7 +987,7 @@ class StartTestDialog extends StatelessWidget {
               onPressed: attemptProvider.isLoading || quizProvider.isLoading
                   ? null
                   : () async {
-                      // ✅ First: Fetch questions
+                      // ✅ Step 1: Fetch questions using filters
                       final fetchSuccess = await quizProvider.fetchQuestions(
                         level,
                         subject,
@@ -1005,10 +1006,29 @@ class StartTestDialog extends StatelessWidget {
                         return;
                       }
 
-                      // ✅ Second: Attempt the test
+                      // ✅ Step 2: Get dynamic testId from fetched test
+                      final testIdFromApi = quizProvider.questions.isNotEmpty
+                          ? quizProvider.questions[0].testId
+                          : null;
+
+                      // final testIdFromApi = quizProvider.questions.isNotEmpty
+                      //     ? quizProvider
+                      //           .questions[0]
+                      //           .testId // you need to add testId in Question model
+                      //     : null;
+
+                      if (testIdFromApi == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Invalid test ID.")),
+                        );
+                        return;
+                      }
+
+                      // ✅ Step 3: Attempt the test
                       final attemptSuccess = await attemptProvider.attemptTest(
-                        testId,
+                        testIdFromApi,
                       );
+
                       if (!attemptSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1021,87 +1041,87 @@ class StartTestDialog extends StatelessWidget {
                         return;
                       }
 
-                      final attemptId = attemptProvider.attemptId;
-                      if (attemptId == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Invalid attempt ID.")),
-                        );
-                        return;
-                      }
-
-                      // ✅ If both succeed → navigate
+                      // ✅ Step 4: Navigate to QuizScreen
                       if (context.mounted) {
                         Navigator.pop(context); // Close dialog
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => QuizScreen(
-                              attemptId: attemptId,
+                              attemptId: attemptProvider.attemptId!,
                               questions: quizProvider.questions,
                             ),
                           ),
                         );
                       }
                     },
-
-              // onPressed: attemptProvider.isLoading || quizProvider.isLoading
-              //     ? null // Disable button while loadin
-              // : () async {
-              //         // ✅ Attempt the test
-              //         final attemptSuccess = await attemptProvider.attemptTest(
-              //           testId,
-              //         );
-              //         if (!attemptSuccess) {
-              //           ScaffoldMessenger.of(context).showSnackBar(
-              //             SnackBar(
-              //               content: Text(
-              //                 attemptProvider.errorMessage ??
-              //                     "Failed to start test. Please try again.",
-              //               ),
-              //             ),
-              //           );
-              //           return;
-              //         }
-
-              //         final attemptId = attemptProvider.attemptId;
-              //         if (attemptId == null) {
-              //           ScaffoldMessenger.of(context).showSnackBar(
-              //             const SnackBar(content: Text("Invalid attempt ID.")),
-              //           );
-              //           return;
-              //         }
-
-              //         // ✅ Fetch questions
-              //         final fetchSuccess = await quizProvider.fetchQuestions(
-              //           level,
-              //           subject,
-              //           className,
-              //         );
-
-              //         if (fetchSuccess && context.mounted) {
-              //           Navigator.pop(context); // Close dialog
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (context) => QuizScreen(
-              //                 attemptId: attemptId,
-              //                 questions: quizProvider.questions,
-              //               ),
-              //             ),
-              //           );
-              //         } else {
-              //           ScaffoldMessenger.of(context).showSnackBar(
-              //             SnackBar(
-              //               content: Text(
-              //                 quizProvider.errorMessage ??
-              //                     "No questions found for this test.",
-              //               ),
-              //             ),
-              //           );
-              //         }
-              //       },
               child: const Text("Start"),
             );
+
+            // return ElevatedButton(
+            //   onPressed: attemptProvider.isLoading || quizProvider.isLoading
+            //       ? null
+            //       : () async {
+            //           // ✅ First: Fetch questions
+            //           final fetchSuccess = await quizProvider.fetchQuestions(
+            //             level,
+            //             subject,
+            //             className,
+            //           );
+
+            //           if (!fetchSuccess) {
+            //             ScaffoldMessenger.of(context).showSnackBar(
+            //               SnackBar(
+            //                 content: Text(
+            //                   quizProvider.errorMessage ??
+            //                       "No questions found for this test.",
+            //                 ),
+            //               ),
+            //             );
+            //             return;
+            //           }
+
+            //           // ✅ Second: Attempt the test
+            //           final attemptSuccess = await attemptProvider.attemptTest(
+            //             testId,
+            //           );
+            //           if (!attemptSuccess) {
+            //             ScaffoldMessenger.of(context).showSnackBar(
+            //               SnackBar(
+            //                 content: Text(
+            //                   attemptProvider.errorMessage ??
+            //                       "Failed to start test. Please try again.",
+            //                 ),
+            //               ),
+            //             );
+            //             return;
+            //           }
+
+            //           final attemptId = attemptProvider.attemptId;
+            //           if (attemptId == null) {
+            //             ScaffoldMessenger.of(context).showSnackBar(
+            //               const SnackBar(content: Text("Invalid attempt ID.")),
+            //             );
+            //             return;
+            //           }
+
+            //           // ✅ If both succeed → navigate
+            //           if (context.mounted) {
+            //             Navigator.pop(context); // Close dialog
+            //             Navigator.push(
+            //               context,
+            //               MaterialPageRoute(
+            //                 builder: (context) => QuizScreen(
+            //                   attemptId: attemptId,
+            //                   questions: quizProvider.questions,
+            //                 ),
+            //               ),
+            //             );
+            //           }
+            //         },
+
+            //   child: const Text("Start"),
+            // );
           },
         ),
       ],

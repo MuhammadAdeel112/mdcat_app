@@ -1367,7 +1367,11 @@ import '../providers/levels_provider.dart';
 import '../widgets/start_test_dialogue.dart';
 
 class LevelsScreen extends StatelessWidget {
-  const LevelsScreen({super.key});
+  const LevelsScreen({
+    super.key,
+    required String subject,
+    required String className,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1423,8 +1427,8 @@ class LevelsScreen extends StatelessWidget {
             testTitle: level.title,
             credits: level.price,
             level: level.level,
-            subject: level.subject,
-            className: level.className,
+            subject: subject,
+            className: className,
           ),
         );
       },

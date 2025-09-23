@@ -1,57 +1,4 @@
-// import 'package:mdcat/models/answer_option_model.dart';
-
-// // import 'answer_option.dart';
-
-// class Question {
-//   final int id;
-//   final String text;
-//   final List<AnswerOption> options;
-
-//   Question({
-//     required this.id,
-//     required this.text,
-//     required this.options,
-//   });
-// }
-
-// import 'package:mdcat/models/answer_option_model.dart';
-
-// // import 'answer_option.dart';
-
-// class Question {
-//   final int id;
-//   final String text;
-//   final List<AnswerOption> options;
-
-//   Question({
-//     required this.id,
-//     required this.text,
-//     required this.options,
-//   });
-// }
-
-// import 'package:mdcat/models/answer_option_model.dart';
-
-// // import 'answer_option.dart';
-
-// class Question {
-//   final int id;
-//   final String text;
-//   final List<AnswerOption> options;
-
-//   Question({required this.id, required this.text, required this.options});
-// }
-
-// import 'package:mdcat/models/answer_option_model.dart';
-
-// class Question {
-//   final int id;
-//   final String text;
-//   final List<AnswerOption> options;
-
-//   Question({required this.id, required this.text, required this.options});
-// }
-// import 'package:mdcat/models/answer_option_model.dart';
+// import 'answer_option_model.dart';
 
 // class Question {
 //   final int id;
@@ -60,126 +7,135 @@
 
 //   Question({required this.id, required this.text, required this.options});
 
-//   factory Question.fromJson(Map<String, dynamic> json) {
+//   // Factory method to create from API JSON
+//   factory Question.fromApi(Map<String, dynamic> json) {
+//     final options =
+//         (json["options"] as List<dynamic>?)?.asMap().entries.map((entry) {
+//           final i = entry.key;
+//           final optionText = entry.value ?? "";
+//           final correctIndex = ((json["correctOption"] ?? 1) - 1);
+//           return AnswerOption(
+//             label: String.fromCharCode(65 + i) + ".", // A., B., C., D.
+//             text: optionText,
+//             isCorrect: i == correctIndex,
+//           );
+//         }).toList() ??
+//         [];
+
 //     return Question(
-//       id: json['id'] is int
-//           ? json['id']
-//           : int.tryParse(json['id'].toString()) ?? 0,
-//       text: json['text'] ?? '',
-//       options:
-//           (json['options'] as List<dynamic>?)
-//               ?.map((opt) => AnswerOption.fromJson(opt))
-//               .toList() ??
-//           [],
-//     );
-//   }
-// }
-// import 'package:mdcat/models/answer_option_model.dart';
-
-// class Question {
-//   final String id;
-//   final String text;
-//   final List<AnswerOption> options;
-//   final int correctOption;
-//   final String correctAnsDescription;
-
-//   Question({
-//     required this.id,
-//     required this.text,
-//     required this.options,
-//     required this.correctOption,
-//     required this.correctAnsDescription,
-//   });
-
-//   factory Question.fromJson(Map<String, dynamic> json) {
-//     return Question(
-//       id: json["_id"] ?? "",
+//       id: json["_id"].hashCode, // unique ID
 //       text: json["question"] ?? "",
-//       options: (json["options"] as List<dynamic>? ?? [])
-//           .asMap()
-//           .entries
-//           .map((e) => AnswerOption(
-//                 label: String.fromCharCode(65 + e.key), // A, B, C, D
-//                 text: e.value ?? "",
-//                 isCorrect: (e.key + 1) == (json["correctOption"] ?? 1),
-//               ))
-//           .toList(),
-//       correctOption: json["correctOption"] ?? 1,
-//       correctAnsDescription: json["correctAnsDescription"] ?? "",
+//       options: options,
 //     );
 //   }
 // }
 // import 'answer_option_model.dart';
 
 // class Question {
-//   final String id; // _id from API
-//   final String text; // question text
+//   final int id;
+//   final String text;
 //   final List<AnswerOption> options;
-//   final int correctOption; // index of correct option
-//   final String correctAnsDescription;
+//   final String testId; // ✅ added testId
 
 //   Question({
 //     required this.id,
 //     required this.text,
 //     required this.options,
-//     required this.correctOption,
-//     required this.correctAnsDescription,
+//     required this.testId, // ✅ required
 //   });
 
-//   // Factory to parse API response
-//   factory Question.fromJson(Map<String, dynamic> json) {
-//     final optionsList = (json['options'] as List<dynamic>? ?? []);
-//     List<AnswerOption> answerOptions = [];
-
-//     for (int i = 0; i < optionsList.length; i++) {
-//       answerOptions.add(
-//         AnswerOption(
-//           label: String.fromCharCode(65 + i), // A, B, C, D
-//           text: optionsList[i] ?? '',
-//           isCorrect:
-//               i ==
-//               ((json['correctOption'] ?? 1) - 1), // correctOption is 1-based
-//         ),
-//       );
-//     }
+//   // Factory method to create from API JSON
+//   factory Question.fromApi(Map<String, dynamic> json, String testId) {
+//     final options =
+//         (json["options"] as List<dynamic>?)?.asMap().entries.map((entry) {
+//           final i = entry.key;
+//           final optionText = entry.value ?? "";
+//           final correctIndex = ((json["correctOption"] ?? 1) - 1);
+//           return AnswerOption(
+//             label: String.fromCharCode(65 + i) + ".", // A., B., C., D.
+//             text: optionText,
+//             isCorrect: i == correctIndex,
+//           );
+//         }).toList() ??
+//         [];
 
 //     return Question(
-//       id: json['_id'] ?? '',
-//       text: json['question'] ?? '',
-//       options: answerOptions,
-//       correctOption: ((json['correctOption'] ?? 1) - 1),
-//       correctAnsDescription: json['correctAnsDescription'] ?? '',
+//       id: json["_id"].hashCode, // unique ID
+//       text: json["question"] ?? "",
+//       options: options,
+//       testId: testId, // ✅ assign testId from the parent test
 //     );
 //   }
 // }
-import 'answer_option_model.dart';
+
+// import 'answer_option_model.dart';
+
+// class Question {
+//   final String id; // Use String because API _id is a string
+//   final String text;
+//   final List<AnswerOption> options;
+
+//   Question({
+//     required this.id,
+//     required this.text,
+//     required this.options,
+//   });
+
+//   factory Question.fromApi(Map<String, dynamic> json, test) {
+//     final options =
+//         (json["options"] as List<dynamic>?)?.asMap().entries.map((entry) {
+//       final i = entry.key;
+//       final optionText = entry.value ?? "";
+//       final correctIndex = ((json["correctOption"] ?? 1) - 1);
+//       return AnswerOption(
+//         label: String.fromCharCode(65 + i) + ".", // A., B., C., D.
+//         text: optionText,
+//         isCorrect: i == correctIndex,
+//       );
+//     }).toList() ?? [];
+
+//     return Question(
+//       id: json["_id"] ?? "", // ✅ use API _id
+//       text: json["question"] ?? "",
+//       options: options,
+//     );
+//   }
+// }
+import 'package:mdcat/models/answer_option_model.dart';
 
 class Question {
-  final int id;
+  final String id;
   final String text;
   final List<AnswerOption> options;
+  final String? testId;
 
-  Question({required this.id, required this.text, required this.options});
+  Question({
+    required this.id,
+    required this.text,
+    required this.options,
+    this.testId,
+  });
 
-  // Factory method to create from API JSON
-  factory Question.fromApi(Map<String, dynamic> json) {
-    final options =
-        (json["options"] as List<dynamic>?)?.asMap().entries.map((entry) {
+  factory Question.fromApi(Map<String, dynamic> json, String? testId) {
+    final options = (json["options"] as List<dynamic>? ?? [])
+        .asMap()
+        .entries
+        .map((entry) {
           final i = entry.key;
-          final optionText = entry.value ?? "";
           final correctIndex = ((json["correctOption"] ?? 1) - 1);
           return AnswerOption(
-            label: String.fromCharCode(65 + i) + ".", // A., B., C., D.
-            text: optionText,
+            label: String.fromCharCode(65 + i) + ".",
+            text: entry.value ?? "",
             isCorrect: i == correctIndex,
           );
-        }).toList() ??
-        [];
+        })
+        .toList();
 
     return Question(
-      id: json["_id"].hashCode, // unique ID
+      id: json["_id"] ?? "",
       text: json["question"] ?? "",
       options: options,
+      testId: testId,
     );
   }
 }

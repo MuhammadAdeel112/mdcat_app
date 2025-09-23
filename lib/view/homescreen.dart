@@ -387,6 +387,7 @@
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mdcat/providers/category_provider_home.dart';
+import 'package:mdcat/providers/class_selection_provider.dart';
 import 'package:mdcat/providers/home_provider.dart';
 import 'package:mdcat/providers/subject_provider.dart';
 import 'package:provider/provider.dart';
@@ -584,11 +585,25 @@ class HomeScreen extends StatelessWidget {
                               // 🔹 If user chooses "continue", navigate to LevelsScreen
                               if (result == "continue") {
                                 Navigator.push(
-                                  screenContext,
+                                  context,
                                   MaterialPageRoute(
-                                    builder: (_) => const LevelsScreen(),
+                                    builder: (_) => LevelsScreen(
+                                      subject: context
+                                          .read<SubjectProvider>()
+                                          .selectedSubject!,
+                                      className: context
+                                          .read<ClassSelectionProvider>()
+                                          .selectedClass!,
+                                    ),
                                   ),
                                 );
+
+                                // Navigator.push(
+                                //   screenContext,
+                                //   MaterialPageRoute(
+                                //     builder: (_) => const LevelsScreen(),
+                                //   ),
+                                // );
                               }
                             }
                           }

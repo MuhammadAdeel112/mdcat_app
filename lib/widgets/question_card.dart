@@ -178,7 +178,7 @@ class QuestionCard extends StatelessWidget {
               return GestureDetector(
                 // onTap: () => vm.selectAnswer(question.id, idx),
                 // onTap: () => vm.selectAnswer(question.id.toString(), idx),
-                onTap: () => vm.selectAnswer(question.id as int, idx),
+                onTap: () => vm.selectAnswer(question.id, idx),
 
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 6),

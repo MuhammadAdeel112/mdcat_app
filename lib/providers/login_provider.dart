@@ -42,9 +42,22 @@ class LoginProvider extends ChangeNotifier {
       // TODO: Save token if needed (SharedPreferences)
       final token = data['token'] as String?;
       if (token != null && token.isNotEmpty) {
-        await TokenStorage.saveToken(token); // save token here
-        print("Saved Token: $token");
+        await TokenStorage.saveToken(token); // save only the raw token
+        print("Saved Token: $token"); // now it won't have "Bearer "
       }
+
+      // final token = data['token'] as String?;
+      // if (token != null && token.isNotEmpty) {
+      //   final bearerToken = "Bearer $token"; // 👈 prepend Bearer
+      //   await TokenStorage.saveToken(bearerToken);
+      //   print("Saved Token: $bearerToken");
+      // }
+
+      // final token = data['token'] as String?;
+      // if (token != null && token.isNotEmpty) {
+      //   await TokenStorage.saveToken(token); // save token here
+      //   print("Saved Token: $token");
+      // }
 
       Navigator.pushReplacement(
         context,

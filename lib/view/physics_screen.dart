@@ -117,53 +117,6 @@ class PhysicsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      // OutlinedButton(
-                      //   onPressed: () {
-                      //     final qp = context.read<QuizProvider>();
-                      //     qp.pauseQuiz();
-
-                      //     showDialog(
-                      //       context: context,
-                      //       barrierDismissible: false,
-                      //       builder: (_) => AlertDialog(
-                      //         title: const Text("Quiz Paused"),
-                      //         content: const Text(
-                      //           "Your quiz is paused. Click Resume to continue.",
-                      //         ),
-                      //         actions: [
-                      //           TextButton(
-                      //             onPressed: () {
-                      //               qp.resumeQuiz();
-                      //               Navigator.pop(context);
-                      //             },
-                      //             child: const Text("Resume"),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     );
-                      //   },
-                      //   style: OutlinedButton.styleFrom(
-                      //     side: const BorderSide(
-                      //       color: Colors.orange,
-                      //       width: 1,
-                      //     ),
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(8),
-                      //     ),
-                      //     padding: const EdgeInsets.symmetric(
-                      //       horizontal: 12,
-                      //       vertical: 6,
-                      //     ),
-                      //   ),
-                      //   child: const Text(
-                      //     "Pause",
-                      //     style: TextStyle(
-                      //       color: Colors.orange,
-                      //       fontWeight: FontWeight.w600,
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -245,22 +198,6 @@ class PhysicsScreen extends StatelessWidget {
                     },
                   ),
                 ),
-
-                // Expanded(
-                //   child: ListView.builder(
-                //     padding: const EdgeInsets.symmetric(horizontal: 20),
-                //     itemCount: question.options.length,
-                //     itemBuilder: (context, i) {
-                //       return OptionTile(
-                //         qIndex: qp.currentIndex,
-                //         index: i,
-                //         label:
-                //             "${String.fromCharCode(65 + i)}.", // 👈 Adds A., B., C., D.
-                //         text: question.options[i],
-                //       );
-                //     },
-                //   ),
-                // ),
 
                 /// Bottom Buttons (Left & Right)
                 Padding(

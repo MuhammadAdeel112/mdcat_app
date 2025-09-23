@@ -105,6 +105,8 @@
 //   }
 // }
 
+// ignore_for_file: unnecessary_cast
+
 import 'package:flutter/material.dart';
 import 'package:mdcat/models/question_model.dart';
 import 'package:mdcat/providers/test_result_provider.dart';
@@ -174,7 +176,10 @@ class QuestionCard extends StatelessWidget {
               final idx = entry.key;
               final option = entry.value;
               return GestureDetector(
-                onTap: () => vm.selectAnswer(question.id, idx),
+                // onTap: () => vm.selectAnswer(question.id, idx),
+                // onTap: () => vm.selectAnswer(question.id.toString(), idx),
+                onTap: () => vm.selectAnswer(question.id as int, idx),
+
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   padding: const EdgeInsets.all(12),

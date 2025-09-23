@@ -269,18 +269,40 @@ class SignupScreen extends StatelessWidget {
                             text: provider.isLoading
                                 ? "Please wait..."
                                 : "Sign Up",
-                            onPressed: () {
+
+                            onPressed: () async {
                               if (!provider.isLoading) {
-                                // provider.register(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const LoginScreen(),
-                                  ),
-                                );
+                                await provider.register(context); // 👈 call API
+
+                                // If signup is successful, navigate to login
+                                if (context.mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginScreen(),
+                                    ),
+                                  );
+                                }
                               }
                             },
                           ),
+
+                          // child: GradientButton(
+                          //   text: provider.isLoading
+                          //       ? "Please wait..."
+                          //       : "Sign Up",
+                          //   onPressed: () {
+                          //     if (!provider.isLoading) {
+                          //       // provider.register(context);
+                          //       Navigator.pushReplacement(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (_) => const LoginScreen(),
+                          //         ),
+                          //       );
+                          //     }
+                          //   },
+                          // ),
                         ),
                       ],
                     ),

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mdcat/models/question_model.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/widgets/custom_background.dart';
 import 'package:mdcat/widgets/option_tile.dart';
 import 'package:provider/provider.dart';
 
 class QuizScreen extends StatelessWidget {
-  const QuizScreen({super.key});
+  final String attemptId;
+  final List<Question> questions;
+  const QuizScreen({
+    super.key,
+    required this.attemptId,
+    required this.questions,
+  });
 
   @override
   Widget build(BuildContext context) {

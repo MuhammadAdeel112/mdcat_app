@@ -82,15 +82,15 @@ class ClassSelectionDialog extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 1st Year option
+
+                    // 1st Year option (sends "11" to provider)
                     ListTile(
                       dense: true,
-                      contentPadding: const EdgeInsets.only(
-                        left: -10,
-                      ), // shift text left
+                      contentPadding: const EdgeInsets.only(left: -10),
                       leading: Transform.translate(
-                        offset: const Offset(-12, 0), // shift radio left
+                        offset: const Offset(-12, 0),
                         child: Radio<String>(
-                          value: "1st Year",
+                          value: "11", // <-- API value for 1st Year
                           groupValue: classProvider.selectedClass,
                           onChanged: (value) {
                             classProvider.selectClass(value);
@@ -98,50 +98,112 @@ class ClassSelectionDialog extends StatelessWidget {
                         ),
                       ),
                       title: Transform.translate(
-                        offset: Offset(-8, 0), // shift text left
-                        child: Text("1st Year"),
+                        offset: const Offset(-8, 0),
+                        child: const Text("1st Year"),
                       ),
                     ),
+
+                    // 2nd Year option (sends "12" to provider)
+                    ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.only(left: -10),
+                      leading: Transform.translate(
+                        offset: const Offset(-12, 0),
+                        child: Radio<String>(
+                          value: "12", // <-- API value for 2nd Year
+                          groupValue: classProvider.selectedClass,
+                          onChanged: (value) {
+                            classProvider.selectClass(value);
+                          },
+                        ),
+                      ),
+                      title: Transform.translate(
+                        offset: const Offset(-8, 0),
+                        child: const Text("2nd Year"),
+                      ),
+                    ),
+
+                    // Both option (choose approach below) — send "both" for now
+                    ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.only(left: -10),
+                      leading: Transform.translate(
+                        offset: const Offset(-12, 0),
+                        child: Radio<String>(
+                          value:
+                              "both", // <-- choose "both" or change to desired API value
+                          groupValue: classProvider.selectedClass,
+                          onChanged: (value) {
+                            classProvider.selectClass(value);
+                          },
+                        ),
+                      ),
+                      title: Transform.translate(
+                        offset: const Offset(-8, 0),
+                        child: const Text("Both"),
+                      ),
+                    ),
+
+                    // ListTile(
+                    //   dense: true,
+                    //   contentPadding: const EdgeInsets.only(
+                    //     left: -10,
+                    //   ), // shift text left
+                    //   leading: Transform.translate(
+                    //     offset: const Offset(-12, 0), // shift radio left
+                    //     child: Radio<String>(
+                    //       value: "1st Year",
+                    //       groupValue: classProvider.selectedClass,
+                    //       onChanged: (value) {
+                    //         classProvider.selectClass(value);
+                    //       },
+                    //     ),
+                    //   ),
+                    //   title: Transform.translate(
+                    //     offset: Offset(-8, 0), // shift text left
+                    //     child: Text("1st Year"),
+                    //   ),
+                    // ),
 
                     // 2nd Year option
-                    ListTile(
-                      dense: true,
-                      contentPadding: const EdgeInsets.only(left: -10),
-                      leading: Transform.translate(
-                        offset: const Offset(-12, 0),
-                        child: Radio<String>(
-                          value: "2nd Year",
-                          groupValue: classProvider.selectedClass,
-                          onChanged: (value) {
-                            classProvider.selectClass(value);
-                          },
-                        ),
-                      ),
-                      title: Transform.translate(
-                        offset: Offset(-8, 0),
-                        child: Text("2nd Year"),
-                      ),
-                    ),
+                    // ListTile(
+                    //   dense: true,
+                    //   contentPadding: const EdgeInsets.only(left: -10),
+                    //   leading: Transform.translate(
+                    //     offset: const Offset(-12, 0),
+                    //     child: Radio<String>(
+                    //       value: "2nd Year",
+                    //       groupValue: classProvider.selectedClass,
+                    //       onChanged: (value) {
+                    //         classProvider.selectClass(value);
+                    //       },
+                    //     ),
+                    //   ),
+                    //   title: Transform.translate(
+                    //     offset: Offset(-8, 0),
+                    //     child: Text("2nd Year"),
+                    //   ),
+                    // ),
 
                     // Both option
-                    ListTile(
-                      dense: true,
-                      contentPadding: const EdgeInsets.only(left: -10),
-                      leading: Transform.translate(
-                        offset: const Offset(-12, 0),
-                        child: Radio<String>(
-                          value: "Both",
-                          groupValue: classProvider.selectedClass,
-                          onChanged: (value) {
-                            classProvider.selectClass(value);
-                          },
-                        ),
-                      ),
-                      title: Transform.translate(
-                        offset: Offset(-8, 0),
-                        child: Text("Both"),
-                      ),
-                    ),
+                    // ListTile(
+                    //   dense: true,
+                    //   contentPadding: const EdgeInsets.only(left: -10),
+                    //   leading: Transform.translate(
+                    //     offset: const Offset(-12, 0),
+                    //     child: Radio<String>(
+                    //       value: "Both",
+                    //       groupValue: classProvider.selectedClass,
+                    //       onChanged: (value) {
+                    //         classProvider.selectClass(value);
+                    //       },
+                    //     ),
+                    //   ),
+                    //   title: Transform.translate(
+                    //     offset: Offset(-8, 0),
+                    //     child: Text("Both"),
+                    //   ),
+                    // ),
                   ],
                 );
               },

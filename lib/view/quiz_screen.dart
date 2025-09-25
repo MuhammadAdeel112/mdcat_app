@@ -20,6 +20,12 @@ class QuizScreen extends StatelessWidget {
       builder: (context, qp, child) {
         final question = qp.questions[qp.currentIndex];
         // final total = qp.questions.length;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!qp.isTimerRunning) {
+            // optional check to avoid restarting
+            qp.startTimer();
+          }
+        });
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -29,23 +35,25 @@ class QuizScreen extends StatelessWidget {
                 /// Purple Gradient Header
                 CustomHeader(
                   title: "Demo Test",
-                  counterText: "1/70",
-                  timerText: "1 hour 15 min",
+                  counterText: "#${qp.currentIndex + 1}/${qp.questions.length}",
+                  timerText: qp.timerText,
                 ),
 
                 // const SizedBox(height: 16),
                 const SizedBox(height: 12),
                 SizedBox(
-                  width:
-                      MediaQuery.of(context).size.width *
-                      0.85, // 👈 85% of screen width
+                  width: MediaQuery.of(context).size.width * 0.85,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: 0.2, // qp.progress()
-                      color: Colors.orange,
-                      backgroundColor: Colors.grey.shade300,
-                      minHeight: 6,
+                    child: Consumer<QuizProvider>(
+                      builder: (context, qp, child) {
+                        return LinearProgressIndicator(
+                          value: qp.progress, // ✅ dynamic progress
+                          color: Colors.orange,
+                          backgroundColor: Colors.grey.shade300,
+                          minHeight: 6,
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -114,22 +122,6 @@ class QuizScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Expanded(
-                //   child: ListView.builder(
-                //     padding: const EdgeInsets.symmetric(horizontal: 20),
-                //     itemCount: question.options.length,
-                //     itemBuilder: (context, i) {
-                //       return OptionTile(
-                //         qIndex: qp.currentIndex,
-                //         index: i,
-                //         label:
-                //             "${String.fromCharCode(65 + i)}.", // 👈 Adds A., B., C., D.
-                //         text: question.options[i],
-                //       );
-                //     },
-                //   ),
-                // ),
-
                 /// Bottom Buttons (Left & Right)
                 Padding(
                   padding: const EdgeInsets.only(
@@ -163,16 +155,18 @@ class QuizScreen extends StatelessWidget {
                         width: 118,
                         height: 42,
                         child: OutlinedButton(
-                          onPressed: () => qp.nextQuestion(),
+                          onPressed:
+                              (qp.isAnswered(qp.currentIndex) ||
+                                  qp.skippedIndexes.contains(qp.currentIndex))
+                              ? () => qp.nextQuestion()
+                              : null, // 🚫 disables if not answered or skipped
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(
                               color: Color(0xFF8C59FF),
                               width: 1,
-                            ), // 👈 border width
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                12,
-                              ), // 👈 12px radius
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             padding: EdgeInsets.zero,
                           ),
@@ -189,9 +183,74 @@ class QuizScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+
+                      // SizedBox(
+                      //   width: 118,
+                      //   height: 42,
+                      //   child: OutlinedButton(
+                      //     onPressed: () => qp.nextQuestion(),
+                      //     style: OutlinedButton.styleFrom(
+                      //       side: const BorderSide(
+                      //         color: Color(0xFF8C59FF),
+                      //         width: 1,
+                      //       ), // 👈 border width
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(
+                      //           12,
+                      //         ), // 👈 12px radius
+                      //       ),
+                      //       padding: EdgeInsets.zero,
+                      //     ),
+                      //     child: const Row(
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: [
+                      //         Text(
+                      //           "Next",
+                      //           style: TextStyle(color: Colors.black),
+                      //         ),
+                      //         SizedBox(width: 6),
+                      //         Icon(Icons.arrow_right_alt, color: Colors.black),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
+
+                    // Submit button
                   ),
                 ),
+
+                // Below the Wrap showing skipped indexes
+                if (qp.isQuizFinished)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        qp.submitQuiz();
+                      },
+                      child: const Text("Submit Quiz"),
+                    ),
+                  ),
+
+                //                if (qp.isQuizFinished)
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 40),
+                //   child: ElevatedButton(
+                //     onPressed: () => qp.submitQuiz(),
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Colors.green,
+                //       foregroundColor: Colors.white,
+                //       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(12),
+                //       ),
+                //     ),
+                //     child: const Text(
+                //       "Submit Quiz",
+                //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                //     ),
+                //   ),
+                // ),
 
                 /// Show Skipped Questions Indexes
                 if (qp.skippedIndexes.isNotEmpty)

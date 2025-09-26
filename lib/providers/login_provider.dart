@@ -46,19 +46,6 @@ class LoginProvider extends ChangeNotifier {
         print("Saved Token: $token"); // now it won't have "Bearer "
       }
 
-      // final token = data['token'] as String?;
-      // if (token != null && token.isNotEmpty) {
-      //   final bearerToken = "Bearer $token"; // 👈 prepend Bearer
-      //   await TokenStorage.saveToken(bearerToken);
-      //   print("Saved Token: $bearerToken");
-      // }
-
-      // final token = data['token'] as String?;
-      // if (token != null && token.isNotEmpty) {
-      //   await TokenStorage.saveToken(token); // save token here
-      //   print("Saved Token: $token");
-      // }
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => HomeScreen()),

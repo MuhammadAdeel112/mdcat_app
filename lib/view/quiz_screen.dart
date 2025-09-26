@@ -222,15 +222,34 @@ class QuizScreen extends StatelessWidget {
 
                 // Below the Wrap showing skipped indexes
                 if (qp.isQuizFinished)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        qp.submitQuiz();
-                      },
-                      child: const Text("Submit Quiz"),
-                    ),
+                  ElevatedButton(
+                    onPressed: () {
+                      qp.submitQuiz(
+                        context,
+                        attemptId,
+                      ); // ✅ pass context + attemptId
+                    },
+                    child: const Text("Submit Quiz"),
                   ),
+
+                // if (qp.isQuizFinished)
+                //   ElevatedButton(
+                //     onPressed: () {
+                //       qp.submitQuiz(attemptId); // ✅ pass the attemptId
+                //     },
+                //     child: const Text("Submit Quiz"),
+                //   ),
+
+                // if (qp.isQuizFinished)
+                //   Padding(
+                //     padding: const EdgeInsets.symmetric(vertical: 16.0),
+                //     child: ElevatedButton(
+                //       onPressed: () {
+                //         qp.submitQuiz();
+                //       },
+                //       child: const Text("Submit Quiz"),
+                //     ),
+                //   ),
 
                 //                if (qp.isQuizFinished)
                 // Padding(

@@ -11,4 +11,7 @@ class ResultProvider extends ChangeNotifier {
     _result = ResultModel(totalQuestions: total, correctAnswers: correct);
     notifyListeners();
   }
+
+  // double get percentage =>
+  //     totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 }

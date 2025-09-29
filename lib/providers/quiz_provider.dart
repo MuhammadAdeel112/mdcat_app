@@ -5,8 +5,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mdcat/models/question_model.dart';
+import 'package:mdcat/providers/passing_result_provider.dart';
 import 'package:mdcat/services/token_storage.dart';
 import 'package:mdcat/view/passing_result_screen.dart';
+import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
+// import 'package:mdcat/providers/passing_result_provider.dart';
 
 class QuizProvider extends ChangeNotifier {
   bool _quizFinished = false;
@@ -165,70 +169,6 @@ class QuizProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void nextQuestion() {
-  //   // ✅ Block moving forward if not answered and not skipped
-  //   if (!isAnswered(currentIndex) && !skippedIndexes.contains(currentIndex)) {
-  //     debugPrint("⚠️ Must answer or skip before moving on.");
-  //     return;
-  //   }
-
-  //   // If answered a skipped question, remove it
-  //   if (skippedIndexes.contains(currentIndex) &&
-  //       selectedOptions.containsKey(currentIndex)) {
-  //     skippedIndexes.remove(currentIndex);
-  //   }
-
-  //   if (!inRevisitMode) {
-  //     // First pass
-  //     if (currentIndex < questions.length - 1) {
-  //       currentIndex++;
-  //     } else {
-  //       // First pass complete → check skipped
-  //       if (skippedIndexes.isNotEmpty) {
-  //         inRevisitMode = true;
-  //         // jump to first unanswered skipped question
-  //         revisitIndex = skippedIndexes.indexWhere(
-  //           (i) => !selectedOptions.containsKey(i),
-  //         );
-  //         if (revisitIndex == -1) {
-  //           // all skipped are already answered
-  //           skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
-  //           _quizFinished = skippedIndexes.isEmpty;
-  //           inRevisitMode = false;
-  //         } else {
-  //           currentIndex = skippedIndexes[revisitIndex];
-  //         }
-  //       } else {
-  //         _quizFinished = true;
-  //       }
-
-  //       // if (skippedIndexes.isNotEmpty) {
-  //       //   inRevisitMode = true;
-  //       //   revisitIndex = 0;
-  //       //   currentIndex = skippedIndexes[revisitIndex];
-  //       // } else {
-  //       //   _quizFinished = true;
-  //       // }
-  //     }
-  //   } else {
-  //     // Revisit skipped questions
-  //     if (revisitIndex < skippedIndexes.length - 1) {
-  //       revisitIndex++;
-  //       currentIndex = skippedIndexes[revisitIndex];
-  //     } else {
-  //       // Done with all skipped
-  //       skippedIndexes.removeWhere(
-  //         (index) => selectedOptions.containsKey(index),
-  //       );
-  //       if (skippedIndexes.isEmpty) {
-  //         _quizFinished = true;
-  //       }
-  //     }
-  //   }
-
-  //   notifyListeners();
-  // }
-
   /// Skip current question
   void skipQuestion() {
     if (!skippedIndexes.contains(currentIndex)) {
@@ -236,13 +176,6 @@ class QuizProvider extends ChangeNotifier {
     }
     nextQuestion();
   }
-
-  // void skipQuestion() {
-  //   if (!skippedIndexes.contains(currentIndex)) {
-  //     skippedIndexes.add(currentIndex);
-  //   }
-  //   nextQuestion();
-  // }
 
   //check if current question is answered
   bool isAnswered(int questionIndex) {
@@ -300,31 +233,6 @@ class QuizProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void toggleOption(int questionIndex, int optionIndex) {
-  //   final question = questions[questionIndex];
-
-  //   for (var i = 0; i < question.options.length; i++) {
-  //     question.options[i].isSelected = (i == optionIndex);
-  //   }
-
-  //   // Store the option the user selected
-  //   selectedOptions[questionIndex] = question.options[optionIndex].label;
-
-  //   // Remove from skipped if it exists
-  //   // if (skippedIndexes.contains(questionIndex)) {
-  //   //   skippedIndexes.remove(questionIndex);
-  //   // }
-
-  //   // Store the correct option
-  //   final correctOption = question.options.firstWhere(
-  //     (o) => o.isCorrect,
-  //     orElse: () => question.options[0],
-  //   );
-  //   correctAnswers[questionIndex] = correctOption.label;
-
-  //   notifyListeners();
-  // }
-
   //when in revisit mode
   void nextSkippedQuestion() {
     if (!inRevisitMode) return;
@@ -342,24 +250,6 @@ class QuizProvider extends ChangeNotifier {
 
     notifyListeners();
   }
-
-  // void nextSkippedQuestion() {
-  //   if (revisitIndex < skippedIndexes.length - 1) {
-  //     revisitIndex++;
-  //     currentIndex = skippedIndexes[revisitIndex];
-  //   } else {
-  //     // All skipped attempted → show submit button
-  //     skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
-  //     inRevisitMode = false;
-  //     if (skippedIndexes.isEmpty) {
-  //       _quizFinished = true;
-  //     }
-  //     notifyListeners();
-
-  //     // inRevisitMode = false;
-  //     // notifyListeners();
-  //   }
-  // }
 
   //submit button
   bool get isQuizFinished {
@@ -494,7 +384,11 @@ class QuizProvider extends ChangeNotifier {
         debugPrint("Score: ${data['score']} / ${data['totalQuestions']}");
         debugPrint("Correct: ${data['correct']} | Wrong: ${data['wrong']}");
 
-        // ✅ Clean up skipped before finishing
+        // ✅ Update ResultProvider
+        final resultProvider = context.read<ResultProvider>();
+        resultProvider.setResult(data['totalQuestions'], data['correct']);
+
+        // Clean up skipped before finishing
         skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
         _quizFinished = true;
         notifyListeners();
@@ -503,20 +397,22 @@ class QuizProvider extends ChangeNotifier {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const ResultScreen()),
         );
-
-        // if (response.statusCode == 200) {
-        //   final data = jsonDecode(response.body);
-        //   debugPrint("✅ Success: ${data['message']}");
-        //   debugPrint("Score: ${data['score']} / ${data['totalQuestions']}");
-        //   debugPrint("Correct: ${data['correct']} | Wrong: ${data['wrong']}");
-
-        //   // Mark quiz finished
-        //   skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
-        //   _quizFinished = true;
-        //   notifyListeners();
-        //   // _quizFinished = true;
-        //   // notifyListeners();
-      } else if (response.statusCode == 400) {
+      }
+      // if (response.statusCode == 200) {
+      //   final data = jsonDecode(response.body);
+      //   debugPrint("✅ Success: ${data['message']}");
+      //   debugPrint("Score: ${data['score']} / ${data['totalQuestions']}");
+      //   debugPrint("Correct: ${data['correct']} | Wrong: ${data['wrong']}");
+      //   // ✅ Clean up skipped before finishing
+      //   skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
+      //   _quizFinished = true;
+      //   notifyListeners();
+      //   // 🔹 Navigate to result screen
+      //   Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (_) => const ResultScreen()),
+      //   );
+      // }
+      else if (response.statusCode == 400) {
         final data = jsonDecode(response.body);
         debugPrint("⚠️ Error: ${data['message']}");
       } else {
@@ -525,6 +421,20 @@ class QuizProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("❌ Submit failed: $e");
     }
+  }
+
+  void resetQuiz() {
+    // Reset quiz state
+    currentIndex = 0;
+    revisitIndex = 0;
+    inRevisitMode = false;
+    skippedIndexes.clear();
+    selectedOptions.clear();
+    correctAnswers.clear();
+    _quizFinished = false;
+    remainingTime = const Duration(minutes: 90); // reset timer
+    _timer?.cancel();
+    notifyListeners();
   }
 
   @override

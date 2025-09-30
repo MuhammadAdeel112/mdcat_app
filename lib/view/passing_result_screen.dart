@@ -329,6 +329,7 @@ import 'package:provider/provider.dart';
 // import '../providers/quiz_provider.dart';
 
 class ResultScreen extends StatelessWidget {
+  // final String level;
   const ResultScreen({super.key});
 
   @override
@@ -376,29 +377,12 @@ class ResultScreen extends StatelessWidget {
             ),
           ),
 
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 24),
-          //   child: ClipRRect(
-          //     borderRadius: BorderRadius.circular(10),
-          //     child: LinearProgressIndicator(
-          //       value: percentage / 100,
-          //       backgroundColor: Colors.grey.shade300,
-          //       valueColor: const AlwaysStoppedAnimation<Color>(
-          //         Color(0xFFFF5A29),
-          //       ),
-          //       minHeight: 8,
-          //     ),
-          //   ),
-          // ),
           const SizedBox(height: 24),
           Text(
             isPassed ? "Congratulation! 🎉" : "Whoops, sorry 😞",
             style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
           ),
-          // const Text(
-          //   "Congratulation!  🎉",
-          //   style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
-          // ),
+
           const SizedBox(height: 7),
 
           // Circular Progress
@@ -409,10 +393,7 @@ class ResultScreen extends StatelessWidget {
             isPassed ? "Mcqs Passed 👏" : "Mcqs Failed ❌",
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
           ),
-          // const Text(
-          //   "Mcqs Passed 👏",
-          //   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-          // ),
+
           const SizedBox(height: 15),
 
           Text(
@@ -432,14 +413,6 @@ class ResultScreen extends StatelessWidget {
             ),
           ),
 
-          // Text(
-          //   "You have pass the test!",
-          //   style: const TextStyle(
-          //     fontSize: 14,
-          //     color: Colors.black,
-          //     fontWeight: FontWeight.bold,
-          //   ),
-          // ),
           const Spacer(),
 
           Padding(
@@ -481,9 +454,18 @@ class ResultScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const TestResultScreen(),
+                          builder: (_) => TestResultScreen(
+                            // level: quizProvider.selectedLevel, // ✅ Pass the level dynamically
+                          ),
                         ),
                       );
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (_) =>  TestResultScreen(level: level.level),
+                      //   ),
+                      // );
                     },
                     child: const Text(
                       "Check Result",

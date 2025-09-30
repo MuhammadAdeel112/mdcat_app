@@ -1407,6 +1407,9 @@ class LevelsScreen extends StatelessWidget {
           return;
         }
 
+        // Save selected level
+        context.read<LevelsViewModel>().selectLevel(level);
+
         final subject = context.read<SubjectProvider>().selectedSubject;
         final className = context.read<ClassSelectionProvider>().selectedClass;
 
@@ -1432,6 +1435,40 @@ class LevelsScreen extends StatelessWidget {
           ),
         );
       },
+
+      // onTap: () async {
+      //   if (!level.isUnlocked) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(content: Text("This level is locked.")),
+      //     );
+      //     return;
+      //   }
+
+      //   final subject = context.read<SubjectProvider>().selectedSubject;
+      //   final className = context.read<ClassSelectionProvider>().selectedClass;
+
+      //   if (subject == null || className == null) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(
+      //         content: Text("Please select subject and class first"),
+      //       ),
+      //     );
+      //     return;
+      //   }
+
+      //   await showDialog(
+      //     context: context,
+      //     barrierDismissible: false,
+      //     builder: (_) => StartTestDialog(
+      //       testId: level.id.toString(),
+      //       testTitle: level.title,
+      //       credits: level.price,
+      //       level: level.level,
+      //       subject: subject,
+      //       className: className,
+      //     ),
+      //   );
+      // },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),

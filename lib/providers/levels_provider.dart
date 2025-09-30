@@ -308,8 +308,11 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/models/level_model.dart';
 
 class LevelsViewModel extends ChangeNotifier {
+  LevelModel? _selectedLevel;
   int _userCredits = 50; // default credits (you can change this)
   int get userCredits => _userCredits;
+
+  LevelModel? get selectedLevel => _selectedLevel;
 
   final List<LevelModel> _levels = [
     LevelModel(
@@ -455,6 +458,11 @@ class LevelsViewModel extends ChangeNotifier {
       level.isUnlocked = _userCredits >= level.price;
     }
     return _levels;
+  }
+
+  void selectLevel(LevelModel level) {
+    _selectedLevel = level;
+    notifyListeners();
   }
 
   void updateUserCredits(int credits) {

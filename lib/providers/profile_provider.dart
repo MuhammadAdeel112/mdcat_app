@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mdcat/view/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileProvider extends ChangeNotifier {
   String userName = "John Doe";
@@ -18,17 +20,24 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Logout action
-  void logout(BuildContext context) {
-    // Handle logout logic here
-    // For example: clear user data and navigate
+  // 🔹 Updated logout method
+  Future<void> logout(BuildContext context) async {
+    // 1️⃣ Clear user data
     userName = "";
     userEmail = "";
     profileImage = "";
     notifyListeners();
 
-    // Navigate to login or splash screen
-    Navigator.pushReplacementNamed(context, "/login");
-  }
+    // 2️⃣ Clear login info from SharedPreferences (optional, if you use isLoggedIn)
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn'); // remove saved login status
+    await prefs.remove('user_name'); // remove saved username
 
-  // Any other profile-related logic
+    // 3️⃣ Navigate to SplashScreen and remove previous screens
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const SplashScreen()),
+      (route) => false, // removes all previous routes
+    );
+  }
 }

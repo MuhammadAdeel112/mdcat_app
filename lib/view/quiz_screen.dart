@@ -183,37 +183,6 @@ class QuizScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      // SizedBox(
-                      //   width: 118,
-                      //   height: 42,
-                      //   child: OutlinedButton(
-                      //     onPressed: () => qp.nextQuestion(),
-                      //     style: OutlinedButton.styleFrom(
-                      //       side: const BorderSide(
-                      //         color: Color(0xFF8C59FF),
-                      //         width: 1,
-                      //       ), // 👈 border width
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(
-                      //           12,
-                      //         ), // 👈 12px radius
-                      //       ),
-                      //       padding: EdgeInsets.zero,
-                      //     ),
-                      //     child: const Row(
-                      //       mainAxisAlignment: MainAxisAlignment.center,
-                      //       children: [
-                      //         Text(
-                      //           "Next",
-                      //           style: TextStyle(color: Colors.black),
-                      //         ),
-                      //         SizedBox(width: 6),
-                      //         Icon(Icons.arrow_right_alt, color: Colors.black),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
                     ],
 
                     // Submit button
@@ -231,45 +200,6 @@ class QuizScreen extends StatelessWidget {
                     },
                     child: const Text("Submit Quiz"),
                   ),
-
-                // if (qp.isQuizFinished)
-                //   ElevatedButton(
-                //     onPressed: () {
-                //       qp.submitQuiz(attemptId); // ✅ pass the attemptId
-                //     },
-                //     child: const Text("Submit Quiz"),
-                //   ),
-
-                // if (qp.isQuizFinished)
-                //   Padding(
-                //     padding: const EdgeInsets.symmetric(vertical: 16.0),
-                //     child: ElevatedButton(
-                //       onPressed: () {
-                //         qp.submitQuiz();
-                //       },
-                //       child: const Text("Submit Quiz"),
-                //     ),
-                //   ),
-
-                //                if (qp.isQuizFinished)
-                // Padding(
-                //   padding: const EdgeInsets.only(bottom: 40),
-                //   child: ElevatedButton(
-                //     onPressed: () => qp.submitQuiz(),
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: Colors.green,
-                //       foregroundColor: Colors.white,
-                //       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(12),
-                //       ),
-                //     ),
-                //     child: const Text(
-                //       "Submit Quiz",
-                //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                //     ),
-                //   ),
-                // ),
 
                 /// Show Skipped Questions Indexes
                 if (qp.skippedIndexes.isNotEmpty)

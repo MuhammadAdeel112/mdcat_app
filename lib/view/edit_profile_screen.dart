@@ -13,9 +13,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+
     // Fetch current user profile when screen opens
-    final provider = context.read<EditProfileProvider>();
-    provider.fetchUserProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<EditProfileProvider>();
+      provider.fetchUserProfile();
+    });
   }
 
   @override
@@ -67,51 +70,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       CircleAvatar(
                         radius: 60,
                         backgroundImage:
-                            provider.profileImage != null &&
+                            (provider.profileImage != null &&
                                 provider.profileImage.isNotEmpty &&
-                                provider.profileImage.startsWith('http')
+                                provider.profileImage.startsWith('http'))
                             ? NetworkImage(provider.profileImage)
                             : const AssetImage("assets/images/userprofile.png")
                                   as ImageProvider,
+                        onBackgroundImageError: (_, __) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            // provider.setProfilePic("");
+                            provider.updateProfileImage("");
+                            // ✅ safe update
+                          });
+                        },
                       ),
 
-                      // Stack(
-                      //   alignment: Alignment.bottomRight,
-                      //   children: [
-                      //     CircleAvatar(
-                      //       radius: 60,
-                      //       backgroundImage:
-                      //           provider.profileImage.startsWith('http')
-                      //           ? NetworkImage(provider.profileImage)
-                      //           : AssetImage(provider.profileImage)
-                      //                 as ImageProvider,
-                      //     ),
-                      //     Positioned(
-                      //       bottom: 0,
-                      //       right: 0,
-                      //       child: GestureDetector(
-                      //         onTap: () {
-                      //           // Example: update profile image
-                      //           provider.updateProfileImage(
-                      //             "assets/images/newuserprofile.png",
-                      //           );
-                      //         },
-                      //         child: CircleAvatar(
-                      //           radius: 14,
-                      //           backgroundColor: Colors.white,
-                      //           child: ClipOval(
-                      //             child: Image.asset(
-                      //               'assets/images/camera.png',
-                      //               width: 20,
-                      //               height: 20,
-                      //               fit: BoxFit.cover,
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
+                      //
                       SizedBox(height: 30),
 
                       // Fields
@@ -156,23 +130,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SizedBox(height: 30),
 
                       // Save Button
-                      ElevatedButton(
-                        onPressed: provider.saveChanges,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF8266F2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 60,
-                            vertical: 16,
-                          ),
-                        ),
-                        child: Text(
-                          "Save Changes",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                      provider.isLoading
+                          ? const CircularProgressIndicator()
+                          : ElevatedButton(
+                              // onPressed: provider.saveChanges,
+                              onPressed: () => provider.saveChanges(context),
+
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF8266F2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 60,
+                                  vertical: 16,
+                                ),
+                              ),
+                              child: const Text(
+                                "Save Changes",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
 
                       if (provider.errorMessage != null)
                         Padding(

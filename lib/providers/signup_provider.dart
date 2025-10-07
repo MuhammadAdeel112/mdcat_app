@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/gender_provider.dart';
 import 'package:mdcat/repo/signup_repo.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupProvider extends ChangeNotifier {
   // Controllers
@@ -63,6 +64,7 @@ class SignupProvider extends ChangeNotifier {
   }
 
   // Register API Call
+
   Future<void> register(BuildContext context) async {
     final genderProvider = Provider.of<GenderProvider>(context, listen: false);
     final gender = genderProvider.selectedGender;
@@ -90,6 +92,10 @@ class SignupProvider extends ChangeNotifier {
         gender: gender,
         profilePicPath: profilePicPath,
       );
+
+      // ✅ Save name in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_name', student.name);
 
       _isLoading = false;
       notifyListeners();

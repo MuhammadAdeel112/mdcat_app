@@ -88,40 +88,6 @@ class LoginScreen extends StatelessWidget {
                         RememberForgot(),
                         const Spacer(),
 
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(
-                        //     horizontal: AppPadding.horizontal,
-                        //   ),
-                        //   child: ElevatedButton(
-                        //     onPressed: provider.isLoading
-                        //         ? null
-                        //         : () {
-                        //             provider.login(context);
-                        //           },
-                        //     style: ElevatedButton.styleFrom(
-                        //       backgroundColor: const Color(0xFF8C59FF),
-                        //       padding: const EdgeInsets.symmetric(vertical: 14),
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(10),
-                        //       ),
-                        //     ),
-                        //     child: provider.isLoading
-                        //         ? const SizedBox(
-                        //             height: 20,
-                        //             width: 20,
-                        //             child: CircularProgressIndicator(
-                        //               color: Colors.white,
-                        //               strokeWidth: 2,
-                        //             ),
-                        //           )
-                        //         : const Text(
-                        //             "Sign In",
-                        //             style: TextStyle(
-                        //               fontWeight: FontWeight.bold,
-                        //             ),
-                        //           ),
-                        //   ),
-                        // ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppPadding.horizontal,
@@ -135,12 +101,6 @@ class LoginScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 25),
 
-                        // const Text(
-                        //   "Or Sign in with",
-                        //   style: TextStyle(fontWeight: FontWeight.bold),
-                        // ),
-                        // const SizedBox(height: 25),
-                        // _socialRow(),
                         const Spacer(),
                       ],
                     ),

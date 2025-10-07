@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/view/gender_selectionscreen.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:mdcat/widgets/topgardientwithback.dart';
 
@@ -177,7 +178,7 @@ class BodyContentScreen1 extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
-                  "Lorem ipsum dolor sit amet consectetur. Quam varius tortor aliquam habitant.",
+                  "Dream. Prepare. Achieve.\nEvery great doctor once dreamed just like you. Start your journey with passion, purpose, and preparation.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: Colors.black54),
                 ),
@@ -220,9 +221,9 @@ class BodyContentScreen2 extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: const Text(
-              "Lorem ipsum dolor sit amet consectetur.\n Quam varius tortor aliquam habitant.",
+              "Smart Learning for Sharp Minds.\nEmpower your preparation with tools that simplify concepts, strengthen practice, and boost confidence.",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 13,
                 fontWeight: FontWeight.w400,
                 color: Color(0xCC333333),
               ),
@@ -311,9 +312,9 @@ class BodyContentScreen3 extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: const Text(
-              "Lorem ipsum dolor sit amet consectetur.\n Quam varius tortor aliquam habitant.",
+              "Turn Aspiration into Admission.\nWith focus, discipline, and the right guidance, your white coat dream is closer than you think.",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w400,
                 color: Color(0xCC333333),
               ),

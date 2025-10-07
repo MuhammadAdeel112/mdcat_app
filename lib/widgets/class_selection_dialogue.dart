@@ -143,67 +143,6 @@ class ClassSelectionDialog extends StatelessWidget {
                         child: const Text("Both"),
                       ),
                     ),
-
-                    // ListTile(
-                    //   dense: true,
-                    //   contentPadding: const EdgeInsets.only(
-                    //     left: -10,
-                    //   ), // shift text left
-                    //   leading: Transform.translate(
-                    //     offset: const Offset(-12, 0), // shift radio left
-                    //     child: Radio<String>(
-                    //       value: "1st Year",
-                    //       groupValue: classProvider.selectedClass,
-                    //       onChanged: (value) {
-                    //         classProvider.selectClass(value);
-                    //       },
-                    //     ),
-                    //   ),
-                    //   title: Transform.translate(
-                    //     offset: Offset(-8, 0), // shift text left
-                    //     child: Text("1st Year"),
-                    //   ),
-                    // ),
-
-                    // 2nd Year option
-                    // ListTile(
-                    //   dense: true,
-                    //   contentPadding: const EdgeInsets.only(left: -10),
-                    //   leading: Transform.translate(
-                    //     offset: const Offset(-12, 0),
-                    //     child: Radio<String>(
-                    //       value: "2nd Year",
-                    //       groupValue: classProvider.selectedClass,
-                    //       onChanged: (value) {
-                    //         classProvider.selectClass(value);
-                    //       },
-                    //     ),
-                    //   ),
-                    //   title: Transform.translate(
-                    //     offset: Offset(-8, 0),
-                    //     child: Text("2nd Year"),
-                    //   ),
-                    // ),
-
-                    // Both option
-                    // ListTile(
-                    //   dense: true,
-                    //   contentPadding: const EdgeInsets.only(left: -10),
-                    //   leading: Transform.translate(
-                    //     offset: const Offset(-12, 0),
-                    //     child: Radio<String>(
-                    //       value: "Both",
-                    //       groupValue: classProvider.selectedClass,
-                    //       onChanged: (value) {
-                    //         classProvider.selectClass(value);
-                    //       },
-                    //     ),
-                    //   ),
-                    //   title: Transform.translate(
-                    //     offset: Offset(-8, 0),
-                    //     child: Text("Both"),
-                    //   ),
-                    // ),
                   ],
                 );
               },

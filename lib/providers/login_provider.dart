@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/services/auth_services.dart';
 import 'package:mdcat/services/token_storage.dart';
 import 'package:mdcat/view/homescreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
@@ -44,6 +45,13 @@ class LoginProvider extends ChangeNotifier {
       if (token != null && token.isNotEmpty) {
         await TokenStorage.saveToken(token); // save only the raw token
         print("Saved Token: $token"); // now it won't have "Bearer "
+      }
+
+      // ✅ Save username in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      if (data['user'] != null && data['user']['name'] != null) {
+        await prefs.setString('user_name', data['user']['name']);
       }
 
       Navigator.pushReplacement(

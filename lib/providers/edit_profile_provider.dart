@@ -85,7 +85,8 @@ class EditProfileProvider extends ChangeNotifier {
   }
 
   /// 🔹 Save changes for currently logged-in user
-  Future<void> saveChanges() async {
+  // Future<void> saveChanges() async {
+  Future<void> saveChanges(BuildContext context) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
@@ -99,27 +100,57 @@ class EditProfileProvider extends ChangeNotifier {
         return;
       }
 
-      final response = await http.put(
+      var request = http.MultipartRequest(
+        "PUT",
         Uri.parse("$baseUrl/api/student/updateProfile"),
-        headers: {"Authorization": token, "Content-Type": "application/json"},
-        body: jsonEncode({
-          "name": nameController.text,
-          "fatherName": fatherNameController.text,
-          "email": emailController.text,
-          "phoneNo": phoneController.text,
-          "testType": selectedCourse,
-          "province": selectedCity,
-          "profilePic": profileImage,
-        }),
       );
 
+      // ✅ Add headers
+      request.headers.addAll({
+        "Authorization": token,
+        "Content-Type": "multipart/form-data",
+      });
+
+      // ✅ Add text fields
+      request.fields["name"] = nameController.text;
+      request.fields["fatherName"] = fatherNameController.text;
+      request.fields["phoneNo"] = phoneController.text;
+      request.fields["email"] = emailController.text;
+      request.fields["password"] = passwordController.text.isNotEmpty
+          ? passwordController.text
+          : "123"; // fallback if empty
+      request.fields["testType"] = selectedCourse;
+      request.fields["province"] = selectedCity;
+
+      // ✅ Profile pic (if you want to send a file, uncomment this)
+      // if (profileImage != "assets/images/userprofile.png" &&
+      //     !profileImage.startsWith("http")) {
+      //   request.files.add(await http.MultipartFile.fromPath(
+      //     "profilePic",
+      //     profileImage,
+      //   ));
+      // }
+
+      // If profileImage is just a URL (not a file), send as text
+      if (profileImage.startsWith("http")) {
+        request.fields["profilePic"] = profileImage;
+      }
+
+      // ✅ Send request
+      var response = await request.send();
+      var responseData = await http.Response.fromStream(response);
       if (response.statusCode == 200) {
         debugPrint("✅ Profile updated successfully!");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Profile updated successfully")),
+        );
       } else {
         errorMessage = "Failed to update profile: ${response.statusCode}";
+        debugPrint("❌ ${responseData.body}");
       }
     } catch (e) {
       errorMessage = "Exception saving profile: $e";
+      debugPrint("❌ Exception: $e");
     }
 
     isLoading = false;

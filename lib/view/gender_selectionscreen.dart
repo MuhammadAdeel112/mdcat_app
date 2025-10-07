@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/gender_provider.dart';
 import 'package:mdcat/view/loginscreen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GenderSelectionScreen extends StatelessWidget {
   const GenderSelectionScreen({super.key});
@@ -116,7 +117,8 @@ class GenderSelectionScreen extends StatelessWidget {
                   ),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await _completeOnboarding();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -146,5 +148,10 @@ class GenderSelectionScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasCompletedOnboarding', true);
   }
 }

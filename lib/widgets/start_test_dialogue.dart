@@ -77,10 +77,24 @@ class StartTestDialog extends StatelessWidget {
                   : () async {
                       // ✅ Step 1: Fetch questions using filters
                       final fetchSuccess = await quizProvider.fetchQuestions(
-                        level,
-                        subject,
-                        className,
+                        subject: subject,
+                        level:
+                            (level.toLowerCase() == "mockup" ||
+                                level.toLowerCase() == "demo")
+                            ? null
+                            : level,
+                        className:
+                            (level.toLowerCase() == "mockup" ||
+                                level.toLowerCase() == "demo")
+                            ? null
+                            : className,
                       );
+
+                      // final fetchSuccess = await quizProvider.fetchQuestions(
+                      //   level,
+                      //   subject,
+                      //   className,
+                      // );
 
                       if (!fetchSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(

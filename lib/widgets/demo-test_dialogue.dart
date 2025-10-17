@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mdcat/providers/class_selection_provider.dart';
+import 'package:mdcat/providers/quiz_provider.dart';
+import 'package:mdcat/view/quiz_screen.dart';
+import 'package:provider/provider.dart';
 // import 'package:mdcat/view/demo_quizscreen.dart';
 // import 'package:mdcat/view/quiz_screen.dart';
 
@@ -76,17 +80,58 @@ class DemoTestDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => QuizScreen()),
-                    // );
-                    //   Navigator.of(context).pop("continue"); // return to parent
+                  onPressed: () async {
+                    final quizProvider = context.read<QuizProvider>();
+                    final className = context
+                        .read<ClassSelectionProvider>()
+                        .selectedClass;
+                    final subject =
+                        "Demo Test"; // or whatever identifier you want
+                    final level = null;
+
+                    // Show loading dialog
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+
+                    // Fetch questions
+                    final success = await quizProvider.fetchQuestions(
+                      subject: subject,
+                      className: className,
+                      level: level,
+                    );
+
+                    Navigator.pop(context); // close loading dialog
+
+                    if (success) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuizScreen(
+                            attemptId:
+                                "demo_${DateTime.now().millisecondsSinceEpoch}",
+                            questions: quizProvider.questions,
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            quizProvider.errorMessage ??
+                                "Failed to fetch questions",
+                          ),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.transparent, // transparent
-                    shadowColor: Colors.transparent, // remove default shadow
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/category_provider_home.dart';
 import 'package:mdcat/providers/class_selection_provider.dart';
 import 'package:mdcat/providers/home_provider.dart';
+import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/subject_provider.dart';
+// import 'package:mdcat/view/demo_test_dialogue.dart';
+// import 'package:mdcat/view/demo_test_dialogue.dart';
 import 'package:mdcat/view/notification_screen.dart';
+import 'package:mdcat/view/quiz_screen.dart';
+import 'package:mdcat/widgets/demo-test_dialogue.dart';
+// import 'package:mdcat/widgets/demo-test_dialogue.dart';
+// import 'package:mdcat/widgets/demo-test_dialogue.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/view/level_screen.dart';
 import 'package:mdcat/widgets/category_card.dart';
 import 'package:mdcat/widgets/class_selection_dialogue.dart';
-import 'package:mdcat/widgets/demo-test_dialogue.dart';
+// import 'package:mdcat/widgets/demo-test_dialogue.dart';
 import 'package:mdcat/widgets/shared_bottom_nav_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'home_provider.dart';
@@ -21,6 +28,17 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final homeProvider = context.watch<HomeProvider>();
     final categories = context.watch<CategoryProvider>().categories;
+    final filteredCategories = categories.where((cat) {
+      final matchesFilter =
+          homeProvider.searchFilter == "All" ||
+          cat.title.toLowerCase() == homeProvider.searchFilter.toLowerCase();
+
+      final matchesQuery = cat.title.toLowerCase().contains(
+        homeProvider.searchQuery.trim().toLowerCase(),
+      );
+
+      return matchesFilter && matchesQuery;
+    }).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F9),
@@ -143,9 +161,13 @@ class HomeScreen extends StatelessWidget {
                                   color: Color(0xFFB7B7B7),
                                 ),
                                 const SizedBox(width: 8),
-                                const Expanded(
+
+                                //
+                                Expanded(
                                   child: TextField(
-                                    decoration: InputDecoration(
+                                    onChanged: (value) =>
+                                        homeProvider.setSearchQuery(value),
+                                    decoration: const InputDecoration(
                                       hintText: "Search",
                                       hintStyle: TextStyle(
                                         color: Color(0xFFB7B7B7),
@@ -154,6 +176,18 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                // In your search TextField
+                                // const Expanded(
+                                //   child: TextField(
+                                //     decoration: InputDecoration(
+                                //       hintText: "Search",
+                                //       hintStyle: TextStyle(
+                                //         color: Color(0xFFB7B7B7),
+                                //       ),
+                                //       border: InputBorder.none,
+                                //     ),
+                                //   ),
+                                // ),
                                 DropdownButton<String>(
                                   value: homeProvider.searchFilter,
                                   underline: const SizedBox(),
@@ -212,8 +246,6 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       showDialog(
                         context: context,
-                        barrierDismissible:
-                            true, // allow closing dialog by tapping outside
                         builder: (context) => const DemoTestDialog(),
                       );
                     },
@@ -231,7 +263,9 @@ class HomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 12),
+
               // ======= Categories Grid =======
+              // 🔹 Filter categories based on dropdown and search text
               GridView.count(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
@@ -239,7 +273,8 @@ class HomeScreen extends StatelessWidget {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.25,
-                children: categories.map((Category cat) {
+                // children: categories.map((Category cat) {
+                children: filteredCategories.map((Category cat) {
                   return CategoryCard(
                     image: cat.image,
                     title: cat.title,
@@ -248,13 +283,56 @@ class HomeScreen extends StatelessWidget {
                     onTap: cat.isEnabled
                         ? () async {
                             final screenContext = context;
-
                             if (cat.title == "Mockup Test") {
-                              // 🔹 Handle Mockup Test as before
-                              await showDialog(
-                                context: screenContext,
-                                builder: (context) => const DemoTestDialog(),
+                              final subject =
+                                  cat.title; // e.g., "Mockup" as the subject
+
+                              final className = context
+                                  .read<ClassSelectionProvider>()
+                                  .selectedClass; // optional
+                              final level =
+                                  null; // or any default value if needed
+
+                              // Show loading dialog
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
+
+                              // Fetch questions
+                              final quizProvider = context.read<QuizProvider>();
+                              final success = await quizProvider.fetchQuestions(
+                                subject: subject,
+                                className: className, // can be null
+                                level: level, // can be null
+                              );
+
+                              Navigator.pop(context); // close loading dialog
+
+                              if (success) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => QuizScreen(
+                                      attemptId:
+                                          "demo_${DateTime.now().millisecondsSinceEpoch}",
+                                      questions: quizProvider.questions,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      quizProvider.errorMessage ??
+                                          "Failed to fetch questions",
+                                    ),
+                                  ),
+                                );
+                              }
                             } else {
                               // 🔹 Save selected subject (Physics, Biology, etc.)
                               context.read<SubjectProvider>().selectSubject(

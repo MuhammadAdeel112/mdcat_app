@@ -3,7 +3,9 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   // static const String baseUrl = "http://10.0.2.2:5000/api/student";
-  static const String baseUrl = "http://47.130.103.135/api/student";
+  // static const String baseUrl = "http://47.130.103.135/api/student";
+  static const String baseUrl = "https://api.mdcatpro.com/api/student";
+
   // Use 10.0.2.2 for Android emulator; replace with localhost/real IP for other setups
 
   Future<Map<String, dynamic>> login(String email, String password) async {

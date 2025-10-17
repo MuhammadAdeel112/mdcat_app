@@ -56,8 +56,8 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Image.asset(
               'assets/images/mdcat real logo.jpg',
-              width: 150,
-              height: 150,
+              width: 180,
+              height: 180,
             ),
             const SizedBox(height: 20),
             const CircularProgressIndicator(color: Color(0xFF8C59FF)),

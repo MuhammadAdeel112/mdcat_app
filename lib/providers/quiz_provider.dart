@@ -56,11 +56,11 @@ class QuizProvider extends ChangeNotifier {
   // Map<int, String> selectedOptions = {};
 
   /// 🔹 Step 2: Fetch Questions after attempt
-  Future<bool> fetchQuestions(
-    String level,
-    String subject,
-    String studentClass,
-  ) async {
+  Future<bool> fetchQuestions({
+    required String subject,
+    String? level,
+    String? className,
+  }) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
@@ -74,14 +74,17 @@ class QuizProvider extends ChangeNotifier {
         return false;
       }
 
+      // Build request body dynamically
+      final body = <String, dynamic>{
+        "subject": subject,
+        if (level != null) "level": level,
+        if (className != null) "class": className,
+      };
+
       final response = await http.post(
         Uri.parse("http://47.130.103.135/api/student/filter-tests"),
         headers: {"Authorization": token, "Content-Type": "application/json"},
-        body: jsonEncode({
-          "level": level,
-          "subject": subject,
-          "class": studentClass,
-        }),
+        body: jsonEncode(body),
       );
 
       debugPrint("🔹 fetchQuestions Status: ${response.statusCode}");
@@ -90,15 +93,16 @@ class QuizProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // ✅ Parse questions from API response
         if (data['tests'] != null &&
             data['tests'] is List &&
             data['tests'].isNotEmpty) {
           final test = data['tests'][0]; // take first test
+
           if (test['questions'] != null && test['questions'] is List) {
             questions = (test['questions'] as List)
                 .map((q) => Question.fromApi(q, test['_id']))
                 .toList();
+
             isLoading = false;
             notifyListeners();
             return questions.isNotEmpty;
@@ -106,7 +110,7 @@ class QuizProvider extends ChangeNotifier {
             errorMessage = "No questions found in this test.";
           }
         } else {
-          errorMessage = "No tests found for given filter.";
+          errorMessage = "No tests found for the given filter.";
         }
       } else {
         errorMessage = "Server error: ${response.statusCode}";
@@ -119,6 +123,70 @@ class QuizProvider extends ChangeNotifier {
     notifyListeners();
     return false;
   }
+
+  // Future<bool> fetchQuestions(
+  //   String level,
+  //   String subject,
+  //   String studentClass,
+  // ) async {
+  //   isLoading = true;
+  //   errorMessage = null;
+  //   notifyListeners();
+
+  //   try {
+  //     final token = await TokenStorage.getToken();
+  //     if (token == null || token.isEmpty) {
+  //       errorMessage = "No token found. Please login again.";
+  //       isLoading = false;
+  //       notifyListeners();
+  //       return false;
+  //     }
+
+  //     final response = await http.post(
+  //       Uri.parse("http://47.130.103.135/api/student/filter-tests"),
+  //       headers: {"Authorization": token, "Content-Type": "application/json"},
+  //       body: jsonEncode({
+  //         "level": level,
+  //         "subject": subject,
+  //         "class": studentClass,
+  //       }),
+  //     );
+
+  //     debugPrint("🔹 fetchQuestions Status: ${response.statusCode}");
+  //     debugPrint("🔹 fetchQuestions Body: ${response.body}");
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+
+  //       // ✅ Parse questions from API response
+  //       if (data['tests'] != null &&
+  //           data['tests'] is List &&
+  //           data['tests'].isNotEmpty) {
+  //         final test = data['tests'][0]; // take first test
+  //         if (test['questions'] != null && test['questions'] is List) {
+  //           questions = (test['questions'] as List)
+  //               .map((q) => Question.fromApi(q, test['_id']))
+  //               .toList();
+  //           isLoading = false;
+  //           notifyListeners();
+  //           return questions.isNotEmpty;
+  //         } else {
+  //           errorMessage = "No questions found in this test.";
+  //         }
+  //       } else {
+  //         errorMessage = "No tests found for given filter.";
+  //       }
+  //     } else {
+  //       errorMessage = "Server error: ${response.statusCode}";
+  //     }
+  //   } catch (e) {
+  //     errorMessage = "Failed to fetch questions: $e";
+  //   }
+
+  //   isLoading = false;
+  //   notifyListeners();
+  //   return false;
+  // }
 
   /// Move to next question
   void nextQuestion() {

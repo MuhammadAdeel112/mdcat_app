@@ -4,7 +4,8 @@ import 'package:mdcat/models/student_model.dart';
 class SignupService {
   final Dio _dio = Dio();
 
-  static const String baseUrl = "http://47.130.103.135/api/student/signup";
+  // static const String baseUrl = "http://47.130.103.135/api/student/signup";
+  static const String baseUrl = "https://api.mdcatpro.com/api/student/signup";
 
   Future<Student> signupStudent({
     required String name,

@@ -12,8 +12,13 @@ class EditProfileProvider extends ChangeNotifier {
   final TextEditingController phoneController = TextEditingController();
 
   // Dropdowns
+  // String selectedCourse = "MDCAT";
+  // String selectedCity = "Abbottabad";
   String selectedCourse = "MDCAT";
-  String selectedCity = "Abbottabad";
+  String selectedProvince = "KPK"; // default or from API later
+
+  String?
+  selectedCity; // ← no default value, will be set after fetching profile
 
   // Profile Image
   String profileImage = "assets/images/userprofile.png";
@@ -23,7 +28,7 @@ class EditProfileProvider extends ChangeNotifier {
   String? errorMessage;
 
   // Base URL
-  final String baseUrl = "http://47.130.103.135";
+  final String baseUrl = "https://api.mdcatpro.com";
 
   /// 🔹 Fetch user profile of currently logged-in user
   Future<void> fetchUserProfile() async {
@@ -32,7 +37,7 @@ class EditProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final token = await TokenStorage.getToken(); // Dynamic token per user
+      final token = await TokenStorage.getToken();
       if (token == null || token.isEmpty) {
         errorMessage = "No token found. Please login again.";
         isLoading = false;
@@ -48,14 +53,26 @@ class EditProfileProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Map API response to provider fields
         nameController.text = data['name'] ?? "";
         fatherNameController.text = data['fatherName'] ?? "";
         emailController.text = data['email'] ?? "";
         phoneController.text = data['phoneNo'] ?? "";
-        selectedCourse = data['testType'] ?? "MDCAT";
-        selectedCity = data['province'] ?? "Abbottabad";
-        profileImage = data['profilePic'] ?? profileImage;
+        // selectedCourse = data['testType'] ?? "MDCAT";
+        selectedCourse = (data['testType'] ?? "MDCAT").toUpperCase();
+
+        selectedProvince = data['province'] ?? "KPK";
+
+        // ✅ FIX: Full image URL handling
+        final profilePath = data['profilePic'];
+        if (profilePath != null && profilePath.isNotEmpty) {
+          if (profilePath.startsWith('http')) {
+            profileImage = profilePath;
+          } else {
+            profileImage =
+                "$baseUrl/uploads/$profilePath"; // or your actual image folder path
+          }
+          print("🖼️ Full image URL: $profileImage");
+        }
       } else {
         errorMessage = "Failed to fetch profile: ${response.statusCode}";
       }
@@ -67,16 +84,67 @@ class EditProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Future<void> fetchUserProfile() async {
+  //   isLoading = true;
+  //   errorMessage = null;
+  //   notifyListeners();
+
+  //   try {
+  //     final token = await TokenStorage.getToken(); // Dynamic token per user
+  //     if (token == null || token.isEmpty) {
+  //       errorMessage = "No token found. Please login again.";
+  //       isLoading = false;
+  //       notifyListeners();
+  //       return;
+  //     }
+
+  //     final response = await http.get(
+  //       Uri.parse("$baseUrl/api/student/myProfile"),
+  //       headers: {"Authorization": token, "Content-Type": "application/json"},
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+
+  //       // Map API response to provider fields
+  //       nameController.text = data['name'] ?? "";
+  //       fatherNameController.text = data['fatherName'] ?? "";
+  //       emailController.text = data['email'] ?? "";
+  //       phoneController.text = data['phoneNo'] ?? "";
+  //       selectedCourse = data['testType'] ?? "MDCAT";
+  //       selectedProvince = data['province'] ?? "KPK";
+
+  //       // selectedCity = data['province'] ?? "Abbottabad";
+  //       // selectedCity =
+  //       //     data['province'] ?? "KPK"; // fallback, but dynamic from API
+
+  //       profileImage = data['profilePic'] ?? profileImage;
+  //     } else {
+  //       errorMessage = "Failed to fetch profile: ${response.statusCode}";
+  //     }
+  //   } catch (e) {
+  //     errorMessage = "Exception fetching profile: $e";
+  //   }
+
+  //   isLoading = false;
+  //   notifyListeners();
+  // }
+
   /// 🔹 Update dropdowns
   void updateCourse(String course) {
     selectedCourse = course;
     notifyListeners();
   }
 
-  void updateCity(String city) {
-    selectedCity = city;
+  void updateProvince(String province) {
+    selectedProvince = province;
     notifyListeners();
   }
+
+  // void updateCity(String city) {
+  //   selectedCity = city;
+  //   notifyListeners();
+  // }
 
   /// 🔹 Update profile image
   void updateProfileImage(String newPath) {
@@ -120,7 +188,8 @@ class EditProfileProvider extends ChangeNotifier {
           ? passwordController.text
           : "123"; // fallback if empty
       request.fields["testType"] = selectedCourse;
-      request.fields["province"] = selectedCity;
+      //  request.fields["province"] = selectedCity;
+      request.fields["province"] = selectedProvince;
 
       // ✅ Profile pic (if you want to send a file, uncomment this)
       // if (profileImage != "assets/images/userprofile.png" &&

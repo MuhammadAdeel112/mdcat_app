@@ -98,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SizedBox(height: 15),
                       _buildDropdownField(
                         "Course",
-                        ["MDCAT", "ECAT", "SAT"],
+                        ["MDCAT", "NUMS", "ECAT"],
                         provider.selectedCourse,
                         provider.updateCourse,
                       ),
@@ -112,17 +112,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       SizedBox(height: 15),
                       _buildDropdownField(
-                        "Province",
+                        "Province", // Label text
                         [
-                          "KPK",
                           "Punjab",
                           "Sindh",
+                          "KPK",
                           "Balochistan",
                           "Gilgit Baltistan",
                           "AJK",
-                        ], // Match your API values
-                        provider.selectedCity,
-                        provider.updateCity,
+                        ], // Dropdown options
+                        provider.selectedProvince, // Selected value
+                        provider.updateProvince, // Update method
                       ),
 
                       SizedBox(height: 15),

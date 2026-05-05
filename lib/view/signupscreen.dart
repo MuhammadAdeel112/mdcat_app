@@ -8,6 +8,7 @@ import 'package:mdcat/widgets/custom_textfield.dart';
 import 'package:mdcat/widgets/drop_down_textfiled.dart';
 import 'package:mdcat/widgets/gradient_button.dart';
 import 'package:mdcat/widgets/topgardientwithback.dart';
+// import 'package:mdcat/widgets/topgardientwithback.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/providers/signup_provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -37,7 +38,6 @@ class SignupScreen extends StatelessWidget {
                         TopGradientWithBack(
                           onBack: () => Navigator.pop(context),
                         ),
-
                         _tabSwitcher(
                           leftText: "Sign Up",
                           rightText: "Sign In",
@@ -272,17 +272,25 @@ class SignupScreen extends StatelessWidget {
 
                             onPressed: () async {
                               if (!provider.isLoading) {
-                                await provider.register(context); // 👈 call API
+                                bool success = await provider.register(context);
 
-                                // If signup is successful, navigate to login
-                                if (context.mounted) {
+                                if (success && context.mounted) {
                                   Navigator.pushReplacement(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const LoginScreen(),
-                                    ),
+                                    MaterialPageRoute(builder: (_) => const LoginScreen()),
                                   );
                                 }
+                                // await provider.register(context); // 👈 call API
+                                //
+                                // // If signup is successful, navigate to login
+                                // if (context.mounted) {
+                                //   Navigator.pushReplacement(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (_) => const LoginScreen(),
+                                //     ),
+                                //   );
+                                // }
                               }
                             },
                           ),

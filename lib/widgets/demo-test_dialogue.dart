@@ -58,7 +58,7 @@ class DemoTestDialog extends StatelessWidget {
 
             // Description
             const Text(
-              "Lorem ipsum dolor sit amet consectetur. Quam varius tortor aliquam habitant.",
+              "A practice conversation to understand how the test works before taking the real one.",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),

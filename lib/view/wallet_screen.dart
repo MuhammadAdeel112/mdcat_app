@@ -1,61 +1,108 @@
 import 'package:flutter/material.dart';
-import 'package:mdcat/widgets/shared_bottom_nav_sheet.dart';
+import 'package:mdcat/view/payment_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:mdcat/providers/wallet_provider.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
 
   @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<WalletProvider>(context, listen: false).fetchWalletData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
+    return Consumer<WalletProvider>(
+      builder: (context, wp, child) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: wp.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : wp.errorMessage != null
+                ? Center(child: Text(wp.errorMessage!))
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Back Button
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: () {
+                            Navigator.pop(
+                              context,
+                            ); // Navigate back to Profile Screen
+                          },
+                        ),
 
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: _walletCard(
-                  title: "Balance",
-                  value: "569,236 PKR",
-                  showButton: true,
-                  height: 149,
-                  buttonText: "Buy Credits",
-                  buttonIcon: Icons.add_card_outlined,
-                ),
-              ),
-              const SizedBox(height: 12),
+                        Center(
+                          child: _walletCard(
+                            title: "Total  Credits",
 
-              Center(
-                child: _walletCard(
-                  title: "Total Deposit",
-                  value: "12492 PKR",
-                  showButton: true,
-                  height: 89,
-                  smallButton: true, // 👈 enables small button mode
-                  buttonIcon: Icons.wallet, // or withdraw icon
-                ),
-              ),
+                            value: "${wp.availableCredits} Coins",
 
-              const SizedBox(height: 20),
-              const Text(
-                "Recent History",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 12),
-              _historyItem("Math", "200 Coins Used", "22 June 2025"),
-              _historyItem("English", "200 Coins Used", "22 June 2025"),
-              _historyItem("Chemistry", "200 Coins Used", "22 June 2025"),
-              _historyItem("Biology", "200 Coins Used", "22 June 2025"),
-            ],
+                            showButton: true,
+                            height: 149,
+                            buttonText: "Buy Credits",
+                            buttonIcon: Icons.add_card_outlined,
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        Center(
+                          child: _walletCard(
+                            title: "Total Deposit",
+
+                            value: "${wp.totalDeposits} PKR",
+
+                            showButton: true,
+                            height: 89,
+                            smallButton: true,
+                            buttonIcon: Icons.wallet,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Recent History",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        wp.usedTests.isEmpty
+                            ? const Text("No used credits history found")
+                            : Column(
+                                children: wp.usedTests.map((item) {
+                                  return _historyItem(
+                                    item.subject,
+                                    "${item.credits} Coins Used",
+                                  );
+                                }).toList(),
+                              ),
+                      ],
+                    ),
+                  ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
+  // ✅ Wallet Card UI remains unchanged
   Widget _walletCard({
     required String title,
     required String value,
@@ -84,7 +131,6 @@ class WalletScreen extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // 🔵 background circles
           Positioned(
             top: 1,
             right: -100,
@@ -121,15 +167,11 @@ class WalletScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // 👇 content (row or column depending on card type)
           Padding(
             padding: const EdgeInsets.all(16),
             child: smallButton
                 ? Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      // small circle button
                       Container(
                         width: 36,
                         height: 36,
@@ -143,7 +185,16 @@ class WalletScreen extends StatelessWidget {
                             color: Colors.black,
                             size: 20,
                           ),
-                          onPressed: () {},
+
+                          onPressed: () {
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) =>
+                            //         const PaymentUploadScreen(),
+                            //   ),
+                            // );
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -196,7 +247,15 @@ class WalletScreen extends StatelessWidget {
                       if (showButton) ...[
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const PaymentUploadScreen(),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
@@ -223,7 +282,8 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  static Widget _historyItem(String subject, String usage, String date) {
+  // ✅ History item without date and level
+  static Widget _historyItem(String subject, String usage) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -252,34 +312,6 @@ class WalletScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                date,
-                style: TextStyle(color: Color(0xFF333333), fontSize: 13),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(0xFF8C59FF),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: const Text(
-                  "Level 1",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

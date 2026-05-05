@@ -148,6 +148,7 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/view/Helpcenterscreen.dart';
 import 'package:mdcat/view/Reportproblemscreen.dart';
+import 'package:mdcat/view/wallet_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/providers/profile_provider.dart';
 import 'package:mdcat/widgets/buildMenuItem.dart';
@@ -248,6 +249,16 @@ class ProfilePage extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => const SecurityScreen(),
                       ),
+                    );
+                  },
+                ),
+                MenuItem(
+                  text: "Wallet ",
+                  icon: Icons.wallet,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WalletScreen()),
                     );
                   },
                 ),

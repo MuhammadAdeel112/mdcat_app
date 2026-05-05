@@ -13,9 +13,11 @@ import 'package:mdcat/providers/passing_result_provider.dart';
 import 'package:mdcat/providers/payment_provider.dart';
 import 'package:mdcat/providers/profile_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
+import 'package:mdcat/providers/score_history_provider.dart';
 import 'package:mdcat/providers/signup_provider.dart';
 import 'package:mdcat/providers/subject_provider.dart';
 import 'package:mdcat/providers/test_result_provider.dart';
+import 'package:mdcat/providers/wallet_provider.dart';
 // import 'package:mdcat/view/loginscreen.dart';
 import 'package:mdcat/view/splash_screen.dart';
 // import 'package:mdcat/view/on_boardingwrapper.dart';
@@ -104,6 +106,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => EditProfileProvider()),
         ChangeNotifierProvider(create: (_) => AttemptProvider()),
+        ChangeNotifierProvider(create: (_) => ScoreHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(
           create: (_) => ResultProvider()..setResult(70, 39),
         ),

@@ -18,7 +18,9 @@ class LoginProvider extends ChangeNotifier {
   }
 
   Future<void> login(BuildContext context) async {
-    final email = emailController.text.trim();
+    // final email = emailController.text.trim();
+    final email = emailController.text.trim().toLowerCase();
+
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {

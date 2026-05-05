@@ -16,7 +16,9 @@ class AttemptProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final url = Uri.parse("http://47.130.103.135/api/student/attempt/start");
+      final url = Uri.parse(
+        "https://api.mdcatpro.com/api/student/attempt/start",
+      );
 
       final token = await TokenStorage.getToken();
       if (token == null || token.isEmpty) {

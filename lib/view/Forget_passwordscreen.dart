@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/providers/forget_password_provider.dart';
+import 'package:mdcat/services/auth_services.dart';
+import 'package:mdcat/widgets/gradient_button.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/constants/constants.dart';
 import 'package:mdcat/view/otp_screen.dart';
-import 'package:mdcat/widgets/gradient_button.dart';
+// import 'package:mdcat/widgets/gradient_button.dart';
 import 'package:mdcat/widgets/topgardientwithback.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:mdcat/providers/forgot_password_provider.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
@@ -118,13 +121,46 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               child: GradientButton(
                 text: "Send Code",
-                onPressed: () {
-                  if (provider.validateEmail()) {
+                onPressed: () async {
+                  final email = provider.emailController.text.trim();
+
+                  // ✅ First, validate email format and not empty
+                  if (!provider.validateEmail()) return;
+
+                  // ✅ Call Forgot Password API
+                  try {
+                    final authService = AuthService();
+                    final response = await authService.forgotPassword(email);
+
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          response['message'] ?? 'Reset code sent to email',
+                        ),
+                      ),
+                    );
+
+                    // Navigate to OTP screen
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => OTPVerificationScreen(
-                          // email: provider.emailController.text,
+                        builder: (_) => OTPVerificationScreen(email: email),
+                      ),
+                    );
+
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) => OTPVerificationScreen(),
+                    //   ),
+                    // );
+                  } catch (e) {
+                    // Show error if email does not exist or other API error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          e.toString().replaceAll('Exception: ', ''),
                         ),
                       ),
                     );

@@ -1,120 +1,143 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:mdcat/providers/report_problem_provider.dart';
+import 'package:mdcat/view/profile_screen.dart';
+import 'package:mdcat/widgets/custom_background.dart';
+import 'package:provider/provider.dart';
 
-class ReportProblemScreen extends StatefulWidget {
+class ReportProblemScreen extends StatelessWidget {
   const ReportProblemScreen({super.key});
 
   @override
-  State<ReportProblemScreen> createState() => _ReportProblemScreenState();
-}
-
-class _ReportProblemScreenState extends State<ReportProblemScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
-  // Function to submit problem via email
-  void _submitProblem() async {
-    if (_formKey.currentState!.validate()) {
-      final String name = _nameController.text.trim();
-      final String email = _emailController.text.trim();
-      final String description = _descriptionController.text.trim();
-
-      final Uri emailLaunchUri = Uri(
-        scheme: 'mailto',
-        path: 'support@mdcatapp.com',
-        query:
-            'subject=Problem Report from MDCAT App&body=Name: $name\nEmail: $email\n\nProblem: $description',
-      );
-
-      if (await canLaunchUrl(emailLaunchUri)) {
-        await launchUrl(emailLaunchUri);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open email app')),
-        );
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Report a Problem'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const Text(
-                'If you encounter any issues or bugs while using the app, please report them below.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-
-              // Name field (optional)
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name (optional)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
+    return ChangeNotifierProvider(
+      create: (_) => ReportProblemProvider(),
+      child: Consumer<ReportProblemProvider>(
+        builder: (context, provider, _) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: Column(
+              children: [
+                CustomHeader(
+                  title: "Report A Problem",
+                  counterText: "",
+                  onBack: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfilePage()),
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 15),
 
-              // Email field (optional)
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email (optional)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 15),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ListView(
+                      children: [
+                        const Text(
+                          'If you encounter any issues or bugs while using the app, please report them below.',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 20),
 
-              // Problem description field (required)
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Describe the problem',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.report_problem),
-                ),
-                maxLines: 5,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please describe the problem';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
+                        TextField(
+                          controller: provider.nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Name (optional)',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.person),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
 
-              // Submit button
-              ElevatedButton.icon(
-                onPressed: _submitProblem,
-                icon: const Icon(Icons.send),
-                label: const Text('Submit'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                        TextField(
+                          controller: provider.emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email (optional)',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.email),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 15),
+
+                        TextField(
+                          controller: provider.descriptionController,
+                          decoration: const InputDecoration(
+                            labelText: 'Describe the problem',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.report_problem),
+                          ),
+                          maxLines: 5,
+                        ),
+
+                        if (provider.errorMessage != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            provider.errorMessage!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+
+                        const SizedBox(height: 20),
+
+                        ElevatedButton.icon(
+                          onPressed: provider.isLoading
+                              ? null
+                              : () async {
+                                  final success = await provider
+                                      .submitProblem();
+
+                                  if (success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "✅ Issue reported successfully",
+                                        ),
+                                      ),
+                                    );
+
+                                    provider.nameController.clear();
+                                    provider.emailController.clear();
+                                    provider.descriptionController.clear();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          provider.errorMessage ??
+                                              "Failed to report issue",
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                          icon: provider.isLoading
+                              ? const SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.send),
+                          label: Text(
+                            provider.isLoading ? "Submitting..." : "Submit",
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

@@ -20,10 +20,9 @@ class Student {
     required this.province,
     required this.gender,
   });
-
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
-      id: json['_id'] ?? '',
+      id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       fatherName: json['fatherName'] ?? '',
       phoneNo: json['phoneNo'] ?? '',

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mdcat/view/Score_screen.dart';
+// import 'package:mdcat/view/Score_screen.dart';
 // import 'package:mdcat/view/chat_screen.dart';
 // import 'package:mdcat/view/chat_screen.dart';
 import 'package:mdcat/view/homescreen.dart';
 // import 'package:mdcat/view/payment_screen.dart';
 // import 'package:mdcat/view/payment_screen.dart';
 import 'package:mdcat/view/profile_screen.dart';
+import 'package:mdcat/view/score_history_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:mdcat/view/wallet_screen.dart';
 // import 'home_screen.dart';

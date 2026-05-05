@@ -200,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                                             "All",
                                             "Physics",
                                             "Biology",
-                                            "Math",
+                                            "Maths",
                                             "Chemistry",
                                             "English",
                                           ]
@@ -283,6 +283,48 @@ class HomeScreen extends StatelessWidget {
                     onTap: cat.isEnabled
                         ? () async {
                             final screenContext = context;
+                            // if (cat.title == "Mockup Test") {
+                            //
+                            //
+                            //
+                            //
+                            //   final subject = "Maths"; // DB mein jo subject hai woh likhو
+                            //   final className = "12";  // DB mein jo class hai
+                            //   final level = "Level 1"; // DB mein jo level hai
+                            //
+                            //   showDialog(
+                            //     context: context,
+                            //     barrierDismissible: false,
+                            //     builder: (_) => const Center(child: CircularProgressIndicator()),
+                            //   );
+                            //
+                            //   final quizProvider = context.read<QuizProvider>();
+                            //   final success = await quizProvider.fetchQuestions(
+                            //     subject: subject,
+                            //     className: className,
+                            //     level: level,
+                            //   );
+                            //
+                            //   Navigator.pop(context);
+                            //
+                            //   if (success) {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //         builder: (_) => QuizScreen(
+                            //           attemptId: "demo_${DateTime.now().millisecondsSinceEpoch}",
+                            //           questions: quizProvider.questions,
+                            //         ),
+                            //       ),
+                            //     );
+                            //   } else {
+                            //     ScaffoldMessenger.of(context).showSnackBar(
+                            //       SnackBar(
+                            //         content: Text(quizProvider.errorMessage ?? "Failed to fetch questions"),
+                            //       ),
+                            //     );
+                            //   }
+                            // }
                             if (cat.title == "Mockup Test") {
                               final subject =
                                   cat.title; // e.g., "Mockup" as the subject
@@ -311,19 +353,32 @@ class HomeScreen extends StatelessWidget {
                               );
 
                               Navigator.pop(context); // close loading dialog
-
                               if (success) {
+                                quizProvider.resetQuiz(); // ✅ pehle reset karo
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => QuizScreen(
-                                      attemptId:
-                                          "demo_${DateTime.now().millisecondsSinceEpoch}",
+                                      attemptId: "demo_${DateTime.now().millisecondsSinceEpoch}", // demo ke liye fake ID
                                       questions: quizProvider.questions,
                                     ),
                                   ),
                                 );
-                              } else {
+                              }
+
+                              // if (success) {
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (_) => QuizScreen(
+                              //         attemptId:
+                              //             "demo_${DateTime.now().millisecondsSinceEpoch}",
+                              //         questions: quizProvider.questions,
+                              //       ),
+                              //     ),
+                              //   );
+                              // }
+                              else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
@@ -333,7 +388,8 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 );
                               }
-                            } else {
+                            }
+                            else {
                               // 🔹 Save selected subject (Physics, Biology, etc.)
                               context.read<SubjectProvider>().selectSubject(
                                 cat.title,

@@ -5,6 +5,7 @@ class SignupService {
   final Dio _dio = Dio();
 
   // static const String baseUrl = "http://47.130.103.135/api/student/signup";
+  // static const String baseUrl = "https://api.mdcatpro.com/api/student/signup";
   static const String baseUrl = "https://api.mdcatpro.com/api/student/signup";
   Future<Student> signupStudent({
     required String name,
@@ -49,19 +50,37 @@ class SignupService {
       final response = await _dio.post(
         baseUrl,
         data: formData,
-        options: Options(headers: {"Content-Type": "multipart/form-data"}),
-      );
+      //   options: Options(
+      //       // headers: {"Content-Type": "multipart/form-data"}
+      //
+       );
+      // 🔹 Debug: see what API actually sends
+      print("=== Response Data ===");
+      print(response.data);
+      print("=== Response Status ===");
+      print(response.statusCode);
 
       if (response.statusCode == 201) {
         return Student.fromJson(response.data["student"]);
       } else {
         throw Exception(response.data["message"] ?? "Signup failed");
       }
-    } on DioException catch (e) {
+    }
+    on DioException catch (e) {
+      print("=== ERROR ===");
+      print(e.response?.data);
+      print(e.message);
+      print(e.response?.statusCode);
+
       throw Exception(
         e.response?.data?["message"] ?? e.message ?? "Signup failed",
       );
     }
+    // on DioException catch (e) {
+    //   throw Exception(
+    //     e.response?.data?["message"] ?? e.message ?? "Signup failed",
+    //   );
+    // }
   }
 
   // Future<Student> signupStudent({

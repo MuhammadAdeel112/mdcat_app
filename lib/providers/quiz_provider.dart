@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 // import 'package:mdcat/providers/passing_result_provider.dart';
 
 class QuizProvider extends ChangeNotifier {
+  bool isReviewMode = false;
   bool _quizFinished = false;
   bool isLoading = false;
   String? errorMessage;
@@ -67,6 +68,7 @@ class QuizProvider extends ChangeNotifier {
 
     try {
       final token = await TokenStorage.getToken();
+      debugPrint("🔑 Raw token from storage: '$token'");
       if (token == null || token.isEmpty) {
         errorMessage = "No token found. Please login again.";
         isLoading = false;
@@ -80,10 +82,12 @@ class QuizProvider extends ChangeNotifier {
         if (level != null) "level": level,
         if (className != null) "class": className,
       };
+      debugPrint("📤 Request body: ${jsonEncode(body)}");
 
       final response = await http.post(
-        Uri.parse("http://47.130.103.135/api/student/filter-tests"),
-        headers: {"Authorization": token, "Content-Type": "application/json"},
+        // Uri.parse("https://api.mdcatpro.com/api/student/filter-tests"),
+        Uri.parse("https://api.mdcatpro.com/api/student/filter-tests"),
+        headers: {"Authorization": "Bearer $token", "Content-Type": "application/json"},
         body: jsonEncode(body),
       );
 
@@ -187,6 +191,14 @@ class QuizProvider extends ChangeNotifier {
   //   notifyListeners();
   //   return false;
   // }
+  void markAsReviewMode() {
+    isReviewMode = true;
+    inRevisitMode = false;
+    _quizFinished = true;
+    // Disable timer in review mode
+    _timer?.cancel();
+    notifyListeners();
+  }
 
   /// Move to next question
   void nextQuestion() {
@@ -402,6 +414,7 @@ class QuizProvider extends ChangeNotifier {
   Future<void> submitQuiz(BuildContext context, String attemptId) async {
     try {
       final token = await TokenStorage.getToken();
+      debugPrint("🔑 Raw token from storage: '$token'");
       if (token == null || token.isEmpty) {
         debugPrint("❌ No token found. Please login again.");
         return;
@@ -439,8 +452,8 @@ class QuizProvider extends ChangeNotifier {
       debugPrint("📤 Sending answers: $answers");
 
       final response = await http.post(
-        Uri.parse("http://47.130.103.135/api/student/attempt/submit"),
-        headers: {"Authorization": token, "Content-Type": "application/json"},
+        Uri.parse("https://api.mdcatpro.com/api/student/attempt/submit"),
+        headers: {"Authorization": "Bearer $token", "Content-Type": "application/json"},
         body: jsonEncode({"attemptId": attemptId, "answers": answers}),
       );
 
@@ -489,6 +502,21 @@ class QuizProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("❌ Submit failed: $e");
     }
+  }
+  // resetQuiz() method ke upar yeh add karo
+  void setQuestions(List<Question> newQuestions) {
+    questions = newQuestions;
+    currentIndex = 0;
+    revisitIndex = 0;
+    inRevisitMode = false;
+    skippedIndexes.clear();
+    selectedOptions.clear();
+    correctAnswers.clear();
+    _quizFinished = false;
+
+    remainingTime = const Duration(minutes: 90);
+    _timer?.cancel();
+    notifyListeners();
   }
 
   void resetQuiz() {

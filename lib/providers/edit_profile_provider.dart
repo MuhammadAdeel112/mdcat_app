@@ -49,6 +49,8 @@ class EditProfileProvider extends ChangeNotifier {
         Uri.parse("$baseUrl/api/student/myProfile"),
         headers: {"Authorization": token, "Content-Type": "application/json"},
       );
+      print("📩 Raw Response Status: ${response.statusCode}");
+      print("📩 Raw Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

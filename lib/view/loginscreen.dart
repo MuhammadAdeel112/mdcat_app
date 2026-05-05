@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mdcat/widgets/gradient_button.dart';
+import 'package:mdcat/widgets/topgardientwithback.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/constants/constants.dart';
 import 'package:mdcat/view/Forget_passwordscreen.dart';
 import 'package:mdcat/view/signupscreen.dart';
 import 'package:mdcat/widgets/custom_textfield.dart';
 // import 'package:mdcat/widgets/gradient_button.dart';
-import 'package:mdcat/widgets/topgardientwithback.dart';
+// import 'package:mdcat/widgets/topgardientwithback.dart';
 
 import '../providers/login_provider.dart'; // 👈 new provider import
 
@@ -37,7 +38,6 @@ class LoginScreen extends StatelessWidget {
                             Navigator.pop(context);
                           },
                         ),
-
                         _tabSwitcher(
                           leftText: "Sign In",
                           rightText: "Sign Up",
@@ -193,36 +193,6 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _spacer() => const SizedBox(height: AppPadding.fieldSpacing);
-
-  // Widget _socialRow() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       _socialButton("Facebook", "assets/images/facebook.jpg", width: 167),
-  //       const SizedBox(width: 15),
-  //       _socialButton("Google", "assets/images/google.png", width: 167),
-  //     ],
-  //   );
-  // }
-
-  // Widget _socialButton(String text, String assetPath, {required double width}) {
-  //   return Container(
-  //     width: width,
-  //     height: 48,
-  //     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 41),
-  //     decoration: BoxDecoration(
-  //       color: const Color(0x1A793FFF),
-  //       borderRadius: BorderRadius.circular(40),
-  //     ),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Image.asset(assetPath, width: 20, height: 20, fit: BoxFit.contain),
-  //         Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
 
 //with provider

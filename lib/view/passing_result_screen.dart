@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/passing_result_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/subject_provider.dart';
+import 'package:mdcat/view/homescreen.dart';
 import 'package:mdcat/view/test_result_screen.dart';
 import 'package:mdcat/widgets/circle_gradient.dart';
 import 'package:mdcat/widgets/custom_background.dart';
@@ -113,8 +114,16 @@ class ResultScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       quizProvider.resetQuiz();
-                      Navigator.pop(context);
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => HomeScreen()),
+                      );
                     },
+                    // onPressed: () {
+                    //   quizProvider.resetQuiz();
+                    //   Navigator.pop(context);
+                    // },
                     child: const Text(
                       "Start New Test",
                       style: TextStyle(fontSize: 16, color: Colors.white),

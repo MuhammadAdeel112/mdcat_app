@@ -65,16 +65,70 @@ class SignupProvider extends ChangeNotifier {
 
   // Register API Call
 
-  Future<void> register(BuildContext context) async {
+  // Future<void> register(BuildContext context) async {
+  // Future<bool> register(BuildContext context)async{
+  //   final genderProvider = Provider.of<GenderProvider>(context, listen: false);
+  //   final gender = genderProvider.selectedGender;
+  //
+  //   final error = _validate(gender);
+  //   if (error != null) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text(error)));
+  //     return;
+  //   }
+  //
+  //   _isLoading = true;
+  //   notifyListeners();
+  //
+  //   try {
+  //     final student = await _repo.signup(
+  //       name: nameController.text.trim(),
+  //       fatherName: fatherNameController.text.trim(),
+  //       phoneNo: phoneNoController.text.trim(),
+  //       // email: emailController.text.trim(),
+  //       email: emailController.text.trim().toLowerCase(),
+  //       password: passwordController.text.trim(),
+  //       testType: selectedTestType!,
+  //       province: selectedProvince!,
+  //       gender: gender,
+  //       profilePicPath: profilePicPath,
+  //     );
+  //
+  //     // ✅ Save name in SharedPreferences
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.setString('user_name', student.name);
+  //     await prefs.setString('user_email', student.email);
+  //
+  //     _isLoading = false;
+  //     notifyListeners();
+  //
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("🎉 Welcome ${student.name}, signup successful!"),
+  //       ),
+  //     );
+  //
+  //     // ✅ Navigate after success
+  //     // Navigator.pushReplacementNamed(context, "/home");
+  //   } catch (e) {
+  //     _isLoading = false;
+  //     notifyListeners();
+  //
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text(e.toString())));
+  //   }
+  // }
+  Future<bool> register(BuildContext context) async {
     final genderProvider = Provider.of<GenderProvider>(context, listen: false);
     final gender = genderProvider.selectedGender;
 
     final error = _validate(gender);
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
-      return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+      return false;
     }
 
     _isLoading = true;
@@ -85,7 +139,7 @@ class SignupProvider extends ChangeNotifier {
         name: nameController.text.trim(),
         fatherName: fatherNameController.text.trim(),
         phoneNo: phoneNoController.text.trim(),
-        email: emailController.text.trim(),
+        email: emailController.text.trim().toLowerCase(),
         password: passwordController.text.trim(),
         testType: selectedTestType!,
         province: selectedProvince!,
@@ -93,28 +147,26 @@ class SignupProvider extends ChangeNotifier {
         profilePicPath: profilePicPath,
       );
 
-      // ✅ Save name in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_name', student.name);
+      await prefs.setString('user_email', student.email);
 
       _isLoading = false;
       notifyListeners();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("🎉 Welcome ${student.name}, signup successful!"),
-        ),
+        SnackBar(content: Text("🎉 Welcome ${student.name}, signup successful!")),
       );
 
-      // ✅ Navigate after success
-      Navigator.pushReplacementNamed(context, "/home");
+      return true; // ✅ SUCCESS
     } catch (e) {
       _isLoading = false;
       notifyListeners();
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+
+      return false; // ❌ FAILURE
     }
   }
 

@@ -205,14 +205,6 @@ class ScoreHistoryScreen extends StatelessWidget {
       create: (_) => ScoreHistoryProvider()..fetchScoreHistory(),
       child: Consumer<ScoreHistoryProvider>(
         builder: (context, provider, _) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!provider.isLoading &&
-                provider.attempts.isEmpty &&
-                provider.errorMessage == null) {
-              provider.fetchScoreHistory();
-            }
-          });
-
           return Scaffold(
             backgroundColor: Colors.white,
             bottomNavigationBar: const AppBottomNav(currentIndex: 2),

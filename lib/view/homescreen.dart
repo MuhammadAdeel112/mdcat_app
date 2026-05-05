@@ -21,13 +21,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'home_provider.dart';
 // import 'category_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<CategoryProvider>();
+      if (provider.categories.isEmpty) {
+        provider.fetchSubjects();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final homeProvider = context.watch<HomeProvider>();
-    final categories = context.watch<CategoryProvider>().categories;
+    final categoryProvider = context.watch<CategoryProvider>();
+    final categories = categoryProvider.categories;
     final filteredCategories = categories.where((cat) {
       final matchesFilter =
           homeProvider.searchFilter == "All" ||
@@ -266,9 +283,27 @@ class HomeScreen extends StatelessWidget {
 
               // ======= Categories Grid =======
               // 🔹 Filter categories based on dropdown and search text
-              GridView.count(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
+              if (categoryProvider.isLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(40.0),
+                    child: CircularProgressIndicator(color: Color(0xFF8C59FF)),
+                  ),
+                )
+              else if (categoryProvider.errorMessage != null)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      categoryProvider.errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                )
+              else
+                GridView.count(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,

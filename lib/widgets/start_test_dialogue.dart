@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:mdcat/view/physics_screen.dart';
 import 'package:mdcat/view/quiz_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mdcat/providers/attempt_provider.dart';
@@ -12,6 +11,7 @@ class StartTestDialog extends StatelessWidget {
   final String level;
   final String subject;
   final String className;
+  final bool isFree;
 
   const StartTestDialog({
     super.key,
@@ -21,6 +21,7 @@ class StartTestDialog extends StatelessWidget {
     required this.level,
     required this.subject,
     required this.className,
+    this.isFree = false,
   });
 
   @override
@@ -30,14 +31,13 @@ class StartTestDialog extends StatelessWidget {
       title: const Text("Start Test"),
       content: Consumer2<AttemptProvider, QuizProvider>(
         builder: (context, attemptProvider, quizProvider, child) {
-          // Show loading indicator if API is in progress
           if (attemptProvider.isLoading || quizProvider.isLoading) {
-            return SizedBox(
+            return const SizedBox(
               height: 80,
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 12),
                     Text("Preparing your test..."),
@@ -47,7 +47,6 @@ class StartTestDialog extends StatelessWidget {
             );
           }
 
-          // Normal content when not loading
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -59,7 +58,7 @@ class StartTestDialog extends StatelessWidget {
               Text("Level: $level"),
               Text("Subject: $subject"),
               Text("Class: $className"),
-              Text("Credits Required: $credits"),
+              Text(isFree ? "Free Test ✅" : "Credits Required: $credits"),
             ],
           );
         },
@@ -75,82 +74,66 @@ class StartTestDialog extends StatelessWidget {
               onPressed: attemptProvider.isLoading || quizProvider.isLoading
                   ? null
                   : () async {
-                      // ✅ Step 1: Fetch questions using filters
-                      final fetchSuccess = await quizProvider.fetchQuestions(
-                        subject: subject,
-                        level:
-                            (level.toLowerCase() == "mockup" ||
-                                level.toLowerCase() == "demo")
-                            ? null
-                            : level,
-                        className:
-                            (level.toLowerCase() == "mockup" ||
-                                level.toLowerCase() == "demo")
-                            ? null
-                            : className,
-                      );
-
-                      // final fetchSuccess = await quizProvider.fetchQuestions(
-                      //   level,
-                      //   subject,
-                      //   className,
-                      // );
-
-                      if (!fetchSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              quizProvider.errorMessage ??
-                                  "No questions found for this test.",
-                            ),
-                          ),
-                        );
-                        return;
-                      }
-
-                      // ✅ Step 2: Get dynamic testId from fetched test
-                      final testIdFromApi = quizProvider.questions.isNotEmpty
-                          ? quizProvider.questions[0].testId
-                          : null;
-
-                      // final testIdFromApi = quizProvider.questions.isNotEmpty
-                      //     ? quizProvider
-                      //           .questions[0]
-                      //           .testId // you need to add testId in Question model
-                      //     : null;
-
-                      if (testIdFromApi == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Invalid test ID.")),
-                        );
-                        return;
-                      }
-
-                      // ✅ Step 3: Attempt the test
-                      final attemptSuccess = await attemptProvider.attemptTest(
-                        testIdFromApi,
-                      );
+                      // ✅ Step 1: Attempt FIRST — this purchases/unlocks the test
+                      final attemptSuccess =
+                          await attemptProvider.attemptTest(testId);
 
                       if (!attemptSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              attemptProvider.errorMessage ??
-                                  "Failed to start test. Please try again.",
-                            ),
-                          ),
+                        debugPrint(
+                          "⚠️ AttemptTest failed: ${attemptProvider.errorMessage}",
                         );
+
+                        if (!isFree) {
+                          // ❌ Paid test: show error and stop
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text(
+                                  attemptProvider.errorMessage ??
+                                      "Failed to start test. Please try again.",
+                                ),
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                        // ✅ Free test: continue even if attempt fails
+                        debugPrint(
+                          "✅ Free test — bypassing attempt failure",
+                        );
+                      }
+
+                      // ✅ Step 2: Fetch questions — pass attemptId to prove test is purchased
+                      final fetchSuccess =
+                          await quizProvider.fetchQuestionsByTestId(
+                        testId,
+                        attemptId: attemptProvider.attemptId,
+                      );
+
+                      if (!fetchSuccess) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text(
+                                quizProvider.errorMessage ??
+                                    "No questions found for this test.",
+                              ),
+                            ),
+                          );
+                        }
                         return;
                       }
 
-                      // ✅ Step 4: Navigate to QuizScreen
+                      // ✅ Step 3: Navigate to QuizScreen
                       if (context.mounted) {
-                        Navigator.pop(context); // Close dialog
+                        Navigator.pop(context);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => QuizScreen(
-                              attemptId: attemptProvider.attemptId!,
+                              attemptId: attemptProvider.attemptId ?? "",
                               questions: quizProvider.questions,
                             ),
                           ),

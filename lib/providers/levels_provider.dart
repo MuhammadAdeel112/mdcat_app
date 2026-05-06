@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:mdcat/models/level_model.dart';
+import 'package:mdcat/services/token_storage.dart';
 
 class LevelsViewModel extends ChangeNotifier {
   LevelModel? _selectedLevel;
@@ -8,143 +11,9 @@ class LevelsViewModel extends ChangeNotifier {
 
   LevelModel? get selectedLevel => _selectedLevel;
 
-  final List<LevelModel> _levels = [
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc2f",
-      title: "Level 1",
-      mcqs: 20,
-      price: 5,
-      level: "Level 1",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc30",
-      title: "Level 2",
-      mcqs: 15,
-      price: 10,
-      level: "Level 2",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc31",
-      title: "Level 3",
-      mcqs: 20,
-      price: 15,
-      level: "Level 3",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc32",
-      title: "Level 4",
-      mcqs: 15,
-      price: 20,
-      level: "Level 4",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc33",
-      title: "Level 5",
-      mcqs: 20,
-      price: 25,
-      level: "Level 5",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc34",
-      title: "Level 6",
-      mcqs: 15,
-      price: 30,
-      level: "Level 6",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc35",
-      title: "Level 7",
-      mcqs: 20,
-      price: 35,
-      level: "Level 7",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc36",
-      title: "Level 8",
-      mcqs: 15,
-      price: 40,
-      level: "Level 8",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc37",
-      title: "Level 9",
-      mcqs: 20,
-      price: 45,
-      level: "Level 9",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc38",
-      title: "Level 10",
-      mcqs: 15,
-      price: 50,
-      level: "Level 10",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc39",
-      title: "Level 11",
-      mcqs: 20,
-      price: 55,
-      level: "Level 11",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc3a",
-      title: "Level 12",
-      mcqs: 15,
-      price: 60,
-      level: "Level 12",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc3b",
-      title: "Level 13",
-      mcqs: 20,
-      price: 65,
-      level: "Level 13",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc3c",
-      title: "Level 14",
-      mcqs: 15,
-      price: 70,
-      level: "Level 14",
-      // subject: "Physics",
-      // className: "11",
-    ),
-    LevelModel(
-      id: "68c3d4c958f454dbcafbdc3d",
-      title: "Level 15",
-      mcqs: 20,
-      price: 75,
-      level: "Level 15",
-      // subject: "Physics",
-      // className: "11",
-    ),
-  ];
+  List<LevelModel> _levels = [];
+  bool isLoading = false;
+  String? errorMessage;
 
   List<LevelModel> get levels {
     // Update unlock status dynamically
@@ -172,6 +41,50 @@ class LevelsViewModel extends ChangeNotifier {
   void deductCredits(int amount) {
     _userCredits -= amount;
     if (_userCredits < 0) _userCredits = 0;
+    notifyListeners();
+  }
+
+  Future<void> fetchLevels(String subject, String className) async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await TokenStorage.getToken();
+      
+      // If the backend expects '1st Year' instead of '11', you can map it here:
+      String mappedClass = className;
+      if (className == "11") mappedClass = "1st Year";
+      if (className == "12") mappedClass = "2nd Year";
+
+      // Properly encoding subject and class to handle spaces (e.g., '1st Year')
+      final encodedSubject = Uri.encodeComponent(subject);
+      final encodedClass = Uri.encodeComponent(mappedClass);
+
+      // Using the production base URL (change to localhost if you are testing locally)
+      final uri = Uri.parse('https://api.mdcatpro.com/api/test/by-subject-class?subject=$encodedSubject&class=$encodedClass');
+      
+      final response = await http.get(uri, headers: {
+        if (token != null) "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      });
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true && data['tests'] != null) {
+          final List testsData = data['tests'];
+          _levels = testsData.map((json) => LevelModel.fromJson(json)).toList();
+        } else {
+          errorMessage = "No tests found.";
+        }
+      } else {
+        errorMessage = "Server error: ${response.statusCode}";
+      }
+    } catch (e) {
+      errorMessage = "Error fetching tests: $e";
+    }
+
+    isLoading = false;
     notifyListeners();
   }
 }

@@ -1,43 +1,113 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mdcat/services/token_storage.dart';
 import 'package:mdcat/view/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileProvider extends ChangeNotifier {
-  String userName = "John Doe";
-  String userEmail = "johndoe@example.com";
-  String profileImage = "assets/images/userprofile.png";
+  // ✅ Profile data from API
+  String userName = "";
+  String userEmail = "";
+  String fatherName = "";
+  String phoneNo = "";
+  String profileImage = ""; // Cloudinary URL
+  String gender = "";
+  String province = "";
+  String testType = "";
+  int coins = 0;
 
-  // Example: update user name
-  void updateUserName(String newName) {
-    userName = newName;
+  bool isLoading = false;
+  String? errorMessage;
+
+  /// 🔹 Fetch Profile from API
+  Future<void> fetchProfile() async {
+    isLoading = true;
+    errorMessage = null;
     notifyListeners();
-  }
 
-  // Example: update profile image
-  void updateProfileImage(String newImagePath) {
-    profileImage = newImagePath;
+    try {
+      final rawToken = await TokenStorage.getToken();
+      debugPrint("🔑 Profile token: '$rawToken'");
+
+      if (rawToken == null || rawToken.trim().isEmpty) {
+        errorMessage = "Not logged in.";
+        isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Clean token of any accidental Bearer prefix
+      final cleanToken = rawToken.trim().replaceFirst(
+        RegExp(r'^Bearer\s+', caseSensitive: false),
+        '',
+      );
+
+      final response = await http.get(
+        Uri.parse("https://api.mdcatpro.com/api/student/myProfile"),
+        headers: {
+          "Authorization": "Bearer $cleanToken",
+          "Content-Type": "application/json",
+        },
+      );
+
+      debugPrint("🔹 Profile Status: ${response.statusCode}");
+      debugPrint("🔹 Profile Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        userName = data['name'] ?? "";
+        userEmail = data['email'] ?? "";
+        fatherName = data['fatherName'] ?? "";
+        phoneNo = data['phoneNo'] ?? "";
+        profileImage = data['profilePic'] ?? "";
+        gender = data['gender'] ?? "";
+        province = data['province'] ?? "";
+        testType = data['testType'] ?? "";
+        coins = data['coins'] ?? 0;
+
+        debugPrint("✅ Profile loaded: $userName | Coins: $coins");
+      } else {
+        errorMessage = "Failed to load profile (${response.statusCode})";
+        debugPrint("❌ Profile error: $errorMessage");
+      }
+    } catch (e) {
+      errorMessage = "Error loading profile: $e";
+      debugPrint("❌ Profile exception: $e");
+    }
+
+    isLoading = false;
     notifyListeners();
   }
 
   // Logout action
-  // 🔹 Updated logout method
   Future<void> logout(BuildContext context) async {
-    // 1️⃣ Clear user data
+    // Clear local data
     userName = "";
     userEmail = "";
+    fatherName = "";
+    phoneNo = "";
     profileImage = "";
+    gender = "";
+    province = "";
+    testType = "";
+    coins = 0;
     notifyListeners();
 
-    // 2️⃣ Clear login info from SharedPreferences (optional, if you use isLoggedIn)
+    // Clear SharedPreferences
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('isLoggedIn'); // remove saved login status
-    await prefs.remove('user_name'); // remove saved username
+    await prefs.clear();
 
-    // 3️⃣ Navigate to SplashScreen and remove previous screens
+    // Clear token
+    await TokenStorage.clearToken();
+
+    // Navigate to SplashScreen
+    if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const SplashScreen()),
-      (route) => false, // removes all previous routes
+      (route) => false,
     );
   }
 }

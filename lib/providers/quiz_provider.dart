@@ -53,9 +53,6 @@ class QuizProvider extends ChangeNotifier {
   Map<int, String> correctAnswers = {};
 
   List<int> skippedIndexes = [];
-  // Track selected options: key = questionIndex, value = optionLabel
-  // Map<int, String> selectedOptions = {};
-
   /// 🔹 Step 2: Fetch Questions after attempt
   Future<bool> fetchQuestions({
     required String subject,
@@ -121,6 +118,90 @@ class QuizProvider extends ChangeNotifier {
       }
     } catch (e) {
       errorMessage = "Failed to fetch questions: $e";
+    }
+
+    isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  /// 🔹 Fetch Questions — tries multiple URL patterns
+  Future<bool> fetchQuestionsByTestId(String testId,
+      {String? attemptId}) async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await TokenStorage.getToken();
+      if (token == null || token.isEmpty) {
+        errorMessage = "No token found. Please login again.";
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
+      final cleanToken = token.trim().replaceFirst(
+        RegExp(r'^Bearer\s+', caseSensitive: false),
+        '',
+      );
+
+      final headers = {
+        "Authorization": "Bearer $cleanToken",
+        "Content-Type": "application/json",
+      };
+
+      // Try multiple URL patterns
+      final urls = [
+        if (attemptId != null && attemptId.isNotEmpty)
+          "https://api.mdcatpro.com/api/test/69fada2cd0b88b75276f9bea/questions",
+        "https://api.mdcatpro.com/api/student/test/$testId/questions",
+        "https://api.mdcatpro.com/api/test/$testId/questions",
+      ];
+
+      for (final urlStr in urls) {
+        final uri = Uri.parse(urlStr);
+        debugPrint("🔹 Trying questions URL: $uri");
+
+        final response = await http.get(uri, headers: headers);
+
+        debugPrint("🔹 Status: ${response.statusCode}");
+        debugPrint("🔹 Body: ${response.body}");
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+
+          List<dynamic>? rawQuestions;
+          String resolvedTestId = testId;
+
+          if (data['test'] != null) {
+            final test = data['test'];
+            rawQuestions = test['questions'];
+            resolvedTestId = test['_id'] ?? testId;
+          } else if (data['questions'] != null) {
+            rawQuestions = data['questions'];
+          }
+
+          if (rawQuestions != null && rawQuestions.isNotEmpty) {
+            questions = rawQuestions
+                .map((q) => Question.fromApi(q, resolvedTestId))
+                .toList();
+            isLoading = false;
+            notifyListeners();
+            debugPrint("✅ Questions loaded: ${questions.length} from $urlStr");
+            return true;
+          } else {
+            debugPrint("⚠️ 200 but no questions in response from $urlStr");
+          }
+        } else {
+          debugPrint("❌ Failed (${ response.statusCode}) from $urlStr");
+        }
+      }
+
+      errorMessage = "Questions could not be loaded. Please contact support.";
+    } catch (e) {
+      errorMessage = "Failed to fetch questions: $e";
+      debugPrint("❌ fetchQuestions Exception: $e");
     }
 
     isLoading = false;
@@ -408,17 +489,8 @@ class QuizProvider extends ChangeNotifier {
   }
   //submit quiz
 
-  // In QuizProvider
-
-  // Future<void> submitQuiz(String attemptId) async {
   Future<void> submitQuiz(BuildContext context, String attemptId) async {
     try {
-      final token = await TokenStorage.getToken();
-      debugPrint("🔑 Raw token from storage: '$token'");
-      if (token == null || token.isEmpty) {
-        debugPrint("❌ No token found. Please login again.");
-        return;
-      }
       // If there are still unanswered skipped questions → jump to revisit instead of submitting
       final remainingUnanswered = skippedIndexes
           .where((i) => !selectedOptions.containsKey(i))
@@ -431,6 +503,46 @@ class QuizProvider extends ChangeNotifier {
         debugPrint("⚠️ Cannot submit: unanswered skipped questions remain.");
         return;
       }
+
+      // ✅ FREE TEST FALLBACK: If attemptId is empty, calculate result locally
+      if (attemptId.isEmpty) {
+        debugPrint("ℹ️ Free test mode — calculating result locally.");
+        int correct = 0;
+        for (var entry in selectedOptions.entries) {
+          final qIndex = entry.key;
+          final selectedLabel = entry.value;
+          if (correctAnswers[qIndex] == selectedLabel) {
+            correct++;
+          }
+        }
+        final total = questions.length;
+        debugPrint("✅ Local Result: $correct / $total");
+
+        final resultProvider = context.read<ResultProvider>();
+        resultProvider.setResult(total, correct);
+
+        skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
+        _quizFinished = true;
+        notifyListeners();
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ResultScreen()),
+        );
+        return;
+      }
+
+      // ✅ PAID TEST: Submit via API
+      final token = await TokenStorage.getToken();
+      debugPrint("🔑 Raw token from storage: '$token'");
+      if (token == null || token.isEmpty) {
+        debugPrint("❌ No token found. Please login again.");
+        return;
+      }
+      // Clean token of any accidental Bearer prefix
+      final cleanToken = token.trim().replaceFirst(
+        RegExp(r'^Bearer\s+', caseSensitive: false),
+        '',
+      );
 
       // Build answers list from selectedOptions
       final answers = selectedOptions.entries.map((entry) {
@@ -453,7 +565,10 @@ class QuizProvider extends ChangeNotifier {
 
       final response = await http.post(
         Uri.parse("https://api.mdcatpro.com/api/student/attempt/submit"),
-        headers: {"Authorization": "Bearer $token", "Content-Type": "application/json"},
+        headers: {
+          "Authorization": "Bearer $cleanToken",
+          "Content-Type": "application/json",
+        },
         body: jsonEncode({"attemptId": attemptId, "answers": answers}),
       );
 
@@ -466,6 +581,7 @@ class QuizProvider extends ChangeNotifier {
         debugPrint("Correct: ${data['correct']} | Wrong: ${data['wrong']}");
 
         // ✅ Update ResultProvider
+        if (!context.mounted) return;
         final resultProvider = context.read<ResultProvider>();
         resultProvider.setResult(data['totalQuestions'], data['correct']);
 
@@ -475,25 +591,11 @@ class QuizProvider extends ChangeNotifier {
         notifyListeners();
 
         // 🔹 Navigate to result screen
+        if (!context.mounted) return;
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const ResultScreen()),
         );
-      }
-      // if (response.statusCode == 200) {
-      //   final data = jsonDecode(response.body);
-      //   debugPrint("✅ Success: ${data['message']}");
-      //   debugPrint("Score: ${data['score']} / ${data['totalQuestions']}");
-      //   debugPrint("Correct: ${data['correct']} | Wrong: ${data['wrong']}");
-      //   // ✅ Clean up skipped before finishing
-      //   skippedIndexes.removeWhere((i) => selectedOptions.containsKey(i));
-      //   _quizFinished = true;
-      //   notifyListeners();
-      //   // 🔹 Navigate to result screen
-      //   Navigator.of(context).pushReplacement(
-      //     MaterialPageRoute(builder: (_) => const ResultScreen()),
-      //   );
-      // }
-      else if (response.statusCode == 400) {
+      } else if (response.statusCode == 400) {
         final data = jsonDecode(response.body);
         debugPrint("⚠️ Error: ${data['message']}");
       } else {

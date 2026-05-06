@@ -20,44 +20,59 @@ class AttemptProvider extends ChangeNotifier {
         "https://api.mdcatpro.com/api/student/attempt/start",
       );
 
-      final token = await TokenStorage.getToken();
-      if (token == null || token.isEmpty) {
+      // ✅ Get raw token from storage
+      final rawToken = await TokenStorage.getToken();
+      debugPrint("🔑 Raw token from storage: '$rawToken'");
+
+      if (rawToken == null || rawToken.trim().isEmpty) {
         errorMessage = "No token found. Please login again.";
         isLoading = false;
         notifyListeners();
         return false;
       }
 
+      // ✅ Clean token: remove any accidental "Bearer " prefix already stored
+      final cleanToken = rawToken.trim().replaceFirst(RegExp(r'^Bearer\s+', caseSensitive: false), '');
+      debugPrint("🔑 Clean token being used: '$cleanToken'");
+
       final body = {"testId": testId};
+      final headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $cleanToken",
+      };
+
+      debugPrint("🔹 AttemptTest url: $url");
+      debugPrint("🔹 AttemptTest headers: $headers");
+      debugPrint("🔹 AttemptTest requestbody: ${jsonEncode(body)}");
 
       final response = await http.post(
         url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token, // ✅ token from storage
-        },
+        headers: headers,
         body: jsonEncode(body),
       );
 
-      print("🔹 AttemptTest url: ${url}");
-      print("🔹 AttemptTest requestbody: ${jsonEncode(body)}");
-      print("🔹 AttemptTest Status: ${response.statusCode}");
-      print("🔹 AttemptTest Body: ${response.body}");
+      debugPrint("🔹 AttemptTest Status: ${response.statusCode}");
+      debugPrint("🔹 AttemptTest Body: ${response.body}");
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
         attemptId = data["attemptId"];
         remainingCoins = data["remainingCoins"];
 
+        debugPrint("✅ AttemptTest Success! attemptId: $attemptId");
+
         isLoading = false;
         notifyListeners();
         return true;
       } else {
-        errorMessage = "Server error: ${response.statusCode}";
+        final data = jsonDecode(response.body);
+        errorMessage = data["message"] ?? "Server error: ${response.statusCode}";
+        debugPrint("❌ AttemptTest Failed: $errorMessage");
       }
     } catch (e) {
       errorMessage = "Failed to attempt test: $e";
+      debugPrint("❌ AttemptTest Exception: $e");
     }
 
     isLoading = false;

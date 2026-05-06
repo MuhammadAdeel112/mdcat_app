@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:mdcat/providers/category_provider_home.dart';
 import 'package:mdcat/providers/class_selection_provider.dart';
 import 'package:mdcat/providers/home_provider.dart';
+import 'package:mdcat/providers/profile_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/subject_provider.dart';
 // import 'package:mdcat/view/demo_test_dialogue.dart';
 // import 'package:mdcat/view/demo_test_dialogue.dart';
 import 'package:mdcat/view/notification_screen.dart';
 import 'package:mdcat/view/quiz_screen.dart';
-import 'package:mdcat/widgets/demo-test_dialogue.dart';
-// import 'package:mdcat/widgets/demo-test_dialogue.dart';
-// import 'package:mdcat/widgets/demo-test_dialogue.dart';
+
 import 'package:provider/provider.dart';
 import 'package:mdcat/view/level_screen.dart';
 import 'package:mdcat/widgets/category_card.dart';
 import 'package:mdcat/widgets/class_selection_dialogue.dart';
 // import 'package:mdcat/widgets/demo-test_dialogue.dart';
 import 'package:mdcat/widgets/shared_bottom_nav_sheet.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 // import 'home_provider.dart';
 // import 'category_provider.dart';
 
@@ -37,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (provider.categories.isEmpty) {
         provider.fetchSubjects();
       }
+      // ✅ Fetch profile for real name & coins
+      context.read<ProfileProvider>().fetchProfile();
     });
   }
 
@@ -108,15 +109,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          FutureBuilder<String>(
-                            future: SharedPreferences.getInstance().then(
-                              (prefs) => prefs.getString('user_name') ?? 'User',
-                            ),
-                            builder: (context, snapshot) {
-                              final name = snapshot.data ?? 'User';
+                          // ✅ Real name from ProfileProvider
+                          Consumer<ProfileProvider>(
+                            builder: (context, profileProvider, _) {
+                              final name = profileProvider.userName.isNotEmpty
+                                  ? profileProvider.userName
+                                  : 'User';
                               return Text(
                                 "Hello,\n$name !",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 22,
                                   height: 1.2,
@@ -128,38 +129,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           const SizedBox(height: 10),
 
-                          // ===== Coin Display =====
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(
-                                0.2,
-                              ), // semi-transparent background
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.monetization_on,
-                                  color: Colors.yellow,
-                                  size: 20,
+                          // ✅ Real coins from ProfileProvider
+                          Consumer<ProfileProvider>(
+                            builder: (context, profileProvider, _) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  "120",
-                                  // "${homeProvider.coins}", // replace with actual coins value
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                              ],
-                            ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.monetization_on,
+                                      color: Colors.yellow,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      "${profileProvider.coins}",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
 
                           const Spacer(),
@@ -257,23 +259,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color(0xFF1F1F1F),
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const DemoTestDialog(),
-                      );
-                    },
-                    child: const Text(
-                      "Demo Test",
-                      style: TextStyle(
-                        color: Color(0xFF8C59FF),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.underline,
-                      ),
                     ),
                   ),
                 ],

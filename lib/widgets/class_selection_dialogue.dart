@@ -165,8 +165,23 @@ class ClassSelectionDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextButton(
-                  onPressed: () => Navigator.of(context).pop("continue"),
-                  // onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    final selectedClass = context.read<ClassSelectionProvider>().selectedClass;
+                    if (selectedClass == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Please select a class to continue.",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+                    Navigator.of(context).pop("continue");
+                  },
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,

@@ -277,16 +277,22 @@ class WalletProvider extends ChangeNotifier {
         return;
       }
 
-      // ✅ Profile API for balance
+      // ✅ Profile API for coins balance
       final profileUrl = Uri.parse(
-        "https://api.mdcatpro.com/api/student/updateProfile",
+        "https://api.mdcatpro.com/api/student/myProfile",
       );
+
+      // Clean token
+      final cleanToken = token.trim().replaceFirst(
+        RegExp(r'^Bearer\s+', caseSensitive: false),
+        '',
+      );
+
       final profileRes = await http.get(
         profileUrl,
         headers: {
-          // "Content-Type": "application/json", "Authorization": token
-          "Authorization": token,
-          "Content-Type": "multipart/form-data",
+          "Authorization": "Bearer $cleanToken",
+          "Content-Type": "application/json",
         },
       );
 

@@ -7,6 +7,7 @@ import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/subject_provider.dart';
 // import 'package:mdcat/view/demo_test_dialogue.dart';
 // import 'package:mdcat/view/demo_test_dialogue.dart';
+import 'package:mdcat/view/mockup_screen.dart';
 import 'package:mdcat/view/notification_screen.dart';
 import 'package:mdcat/view/quiz_screen.dart';
 
@@ -259,6 +260,58 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color(0xFF1F1F1F),
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  // ✅ Premium Mockup Button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MockupScreen()),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF7C51DB),
+                            Color(0xFFBC9DF6),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7C51DB).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.rocket_launch,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            "Mockup",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

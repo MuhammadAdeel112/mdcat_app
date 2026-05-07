@@ -39,8 +39,8 @@ class PaymentProvider extends ChangeNotifier {
 
   /// Submit payment
   Future<bool> submitPayment() async {
-    if (amountController.text.isEmpty || selectedFile == null) {
-      errorMessage = "Amount and proof image are required";
+    if (amountController.text.isEmpty) {
+      errorMessage = "Amount is required";
       notifyListeners();
       return false;
     }
@@ -49,15 +49,20 @@ class PaymentProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      String fileName = selectedFile!.path.split('/').last;
+      Map<String, dynamic> dataMap = {
+        "amount": int.parse(amountController.text),
+      };
 
-      FormData formData = FormData.fromMap({
-        "amount": int.parse(amountController.text), // make sure it's int
-        "proofImage": await MultipartFile.fromFile(
+      // Only add file if selected (though UI is removed, keeping logic safe)
+      if (selectedFile != null) {
+        String fileName = selectedFile!.path.split('/').last;
+        dataMap["proofImage"] = await MultipartFile.fromFile(
           selectedFile!.path,
           filename: fileName,
-        ),
-      });
+        );
+      }
+
+      FormData formData = FormData.fromMap(dataMap);
 
       // Get token from storage
       final token = await TokenStorage.getToken();

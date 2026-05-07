@@ -11,6 +11,7 @@ import 'package:mdcat/providers/levels_provider.dart';
 import 'package:mdcat/providers/new_password_provider.dart';
 import 'package:mdcat/providers/passing_result_provider.dart';
 import 'package:mdcat/providers/payment_provider.dart';
+import 'package:mdcat/providers/mockup_provider.dart';
 import 'package:mdcat/providers/profile_provider.dart';
 import 'package:mdcat/providers/quiz_provider.dart';
 import 'package:mdcat/providers/score_history_provider.dart';
@@ -108,6 +109,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AttemptProvider()),
         ChangeNotifierProvider(create: (_) => ScoreHistoryProvider()),
         ChangeNotifierProvider(create: (_) => WalletProvider()),
+        ChangeNotifierProvider(create: (_) => MockupProvider()), // ✅ Added
         ChangeNotifierProvider(
           create: (_) => ResultProvider()..setResult(70, 39),
         ),
